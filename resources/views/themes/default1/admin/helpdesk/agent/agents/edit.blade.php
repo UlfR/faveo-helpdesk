@@ -135,6 +135,23 @@ class="active"
                 {!! Form::email('email',null,['class' => 'form-control']) !!}
 
             </div>
+            <div class="col-xs-6 form-group {{ $errors->has('organization') ? 'has-error' : '' }}">
+                {!! Form::label('organization',Lang::get('lang.organization')) !!}
+
+
+                <select class="form-control" name="org_id">
+                    @foreach($orgs as $org)
+                        <option value="{!! $org->id !!}" <?php
+                            if ($org->id==$organization_id) {
+                                echo 'selected';
+                            }
+                            ?> >{!! $org->name !!}</option>
+                    @endforeach
+                </select>
+
+            </div>
+        </div>
+        <div class="row">
 
             <div class="col-xs-1 form-group {{ $errors->has('ext') ? 'has-error' : '' }}">
 

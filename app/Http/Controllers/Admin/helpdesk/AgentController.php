@@ -13,6 +13,8 @@ use App\Model\helpdesk\Agent\Assign_team_agent;
 use App\Model\helpdesk\Agent\Department;
 use App\Model\helpdesk\Agent\Groups;
 use App\Model\helpdesk\Agent\Teams;
+use App\Model\helpdesk\Agent_panel\Organization;
+use App\Model\helpdesk\Agent_panel\User_org;
 use App\Model\helpdesk\Utility\CountryCode;
 use App\Model\helpdesk\Utility\Timezones;
 use App\User;
@@ -143,6 +145,10 @@ class AgentController extends Controller
         }
         // save user credentails
         if ($user->save() == true) {
+            if ($request->input('org_id') != '') {
+                $orgid = $request->input('org_id');
+                $this->storeUserOrgRelation($user->id, $orgid);
+            }
             // fetch user credentails to send mail
             $name = $user->first_name;
             $email = $user->email;
@@ -194,8 +200,13 @@ class AgentController extends Controller
             $table = $team_assign_agent->where('agent_id', $id)->first();
             $teams = $team->pluck('id', 'name')->toArray();
             $assign = $team_assign_agent->where('agent_id', $id)->pluck('team_id')->toArray();
+            $orgs = Organization::all();
+            $organization_id = User_org::where('user_id', '=', $id)->pluck('org_id')->first();
 
-            return view('themes.default1.admin.helpdesk.agent.agents.edit', compact('teams', 'assign', 'table', 'teams1', 'selectedTeams', 'user', 'timezones', 'groups', 'departments', 'team', 'exp', 'counted'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.admin.helpdesk.agent.agents.edit', compact(
+                'teams', 'assign', 'table', 'teams1', 'selectedTeams', 'user', 'timezones', 'groups', 'departments', 'team', 'exp', 'counted',
+                'orgs', 'organization_id'
+            ))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect('agents')->with('fail', Lang::get('lang.failed_to_edit_agent'));
         }
@@ -246,6 +257,12 @@ class AgentController extends Controller
             $user->primary_dpt = $request->primary_department;
             $user->agent_tzone = $request->agent_time_zone;
             $user->save();
+
+            if ($request->input('org_id') != '') {
+                $orgid = $request->input('org_id');
+
+                $this->storeUserOrgRelation($id, $orgid);
+            }
 
             return redirect('agents')->with('success', Lang::get('lang.agent_updated_sucessfully'));
         } catch (Exception $e) {
@@ -305,5 +322,18 @@ class AgentController extends Controller
         }
         // return random string
         return $randomString;
+    }
+
+    public function storeUserOrgRelation($userid, $orgid)
+    {
+        $org_relations = new User_org();
+        $org_relation = $org_relations->where('user_id', $userid)->first();
+        if ($org_relation) {
+            $org_relation->delete();
+        }
+        $org_relations->create([
+            'user_id' => $userid,
+            'org_id'  => $orgid,
+        ]);
     }
 }
