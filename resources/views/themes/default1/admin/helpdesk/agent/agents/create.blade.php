@@ -140,6 +140,13 @@ class="active"
                 {!! Form::input('number', 'mobile',null,['class' => 'form-control']) !!}
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-6 form-group {{ $errors->has('organization') ? 'has-error' : '' }}">
+                {!! Form::label('organization',Lang::get('lang.organization')) !!}
+                {!! Form::select('org_id',[''=>'Select','Organization'=>$org],null,['class' => 'form-control','id'=>'org']) !!}
+
+            </div>
+        </div>
         <div>
             <h4>{!! Lang::get('lang.agent_signature') !!}</h4>
         </div>
