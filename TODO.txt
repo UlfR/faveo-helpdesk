@@ -1,1 +1,2 @@
 ALTER TABLE `tickets` ADD `type_id` INT NOT NULL DEFAULT '1' AFTER `updated_at`, ADD INDEX `type_id_idx` (`type_id`);
+ALTER TABLE `department` ADD `parent` INT NOT NULL AFTER `updated_at`, ADD INDEX `parent_idx` (`parent`);

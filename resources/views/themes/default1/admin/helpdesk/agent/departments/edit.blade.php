@@ -52,6 +52,9 @@ class="active"
             @if($errors->first('sla'))
             <li class="error-message-padding">{!! $errors->first('sla', ':message') !!}</li>
             @endif
+            @if($errors->first('parent'))
+            <li class="error-message-padding">{!! $errors->first('parent', ':message') !!}</li>
+            @endif
             @if($errors->first('manager'))
             <li class="error-message-padding">{!! $errors->first('manager', ':message') !!}</li>
             @endif
@@ -77,6 +80,11 @@ class="active"
                         {!! Form::radio('type','0',null) !!} {{Lang::get('lang.private')}}
                     </div>
                 </div>
+            </div>
+            <div class="col-xs-3 form-group {{ $errors->has('parent') ? 'has-error' : '' }}">
+                {!! Form::label('parent',Lang::get('lang.parent')) !!}
+
+                {!!Form::select('parent',[''=>'Select a Department','Departments'=>$dep_list],null,['class' => 'form-control select']) !!}
             </div>
         </div>
         <div class="row">

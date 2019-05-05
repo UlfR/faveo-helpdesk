@@ -76,6 +76,7 @@ class DepartmentController extends Controller
     public function create(User $user, Group_assign_department $group_assign_department, Department $department, Sla_plan $sla, Template $template, Emails $email, Groups $group)
     {
         try {
+            $departments = $department->pluck('name', 'id')->toArray();
             $slas = $sla->where('status', '=', 1)
                     ->select('grace_period', 'id')->get();
             $user = $user->where('role', '<>', 'user')
@@ -86,7 +87,7 @@ class DepartmentController extends Controller
             $department = $department->get();
             $groups = $group->pluck('id', 'name');
 
-            return view('themes.default1.admin.helpdesk.agent.departments.create', compact('department', 'templates', 'slas', 'user', 'emails', 'groups'));
+            return view('themes.default1.admin.helpdesk.agent.departments.create', compact('department', 'templates', 'slas', 'user', 'emails', 'groups', 'departments'));
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
         }
@@ -166,8 +167,9 @@ class DepartmentController extends Controller
             $departments = $department->whereId($id)->first();
             //$groups = $group->pluck('id', 'name');
             $assign = $group_assign_department->where('department_id', $id)->pluck('group_id');
+            $dep_list = Department::pluck('name', 'id')->toArray();
 
-            return view('themes.default1.admin.helpdesk.agent.departments.edit', compact('assign', 'team', 'templates', 'departments', 'slas', 'user', 'emails', 'sys_department'));
+            return view('themes.default1.admin.helpdesk.agent.departments.edit', compact('assign', 'team', 'templates', 'departments', 'slas', 'user', 'emails', 'sys_department', 'dep_list'));
         } catch (Exception $e) {
             return redirect('departments')->with('fails', $e->getMessage());
         }
