@@ -150,6 +150,8 @@ $thread = App\Model\helpdesk\Ticket\Ticket_Thread::where('ticket_id', '=', \Cryp
                             $department = App\Model\helpdesk\Agent\Department::where('id', '=', $help_topic->department)->first();
                             ?>
                             <td title="{{ $department->name }}">{!! $department->name !!}</td></tr>
+                        <tr><td><b>{!! Lang::get('lang.type') !!}:</b></td>
+                            <td title="{{ $tickets->type() }}">{!! $tickets->type() !!}</td></tr>
                     </table>
                     <!-- </div> -->
                 </div>

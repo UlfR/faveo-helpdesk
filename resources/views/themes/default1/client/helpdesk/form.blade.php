@@ -188,6 +188,17 @@ class = "active"
            @endif
             @endif
             @endif
+            <!-- type -->
+            <div class="col-md-12 form-group">
+                <div class="row">
+                    <div class="col-md-1">
+                        <label>{!! Lang::get('lang.type') !!}:</label>
+                    </div>
+                    <div class="col-md-12">
+                        {!! Form::select('type_id', ['Type'=>App\Model\helpdesk\Ticket\Tickets::TYPES],null,['class' => 'form-control select']) !!}
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12 form-group {{ $errors->has('Subject') ? 'has-error' : '' }}">
                 {!! Form::label('Subject',Lang::get('lang.subject')) !!}<span class="text-red"> *</span>
                 {!! Form::text('Subject',null,['class' => 'form-control']) !!}

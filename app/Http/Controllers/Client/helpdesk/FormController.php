@@ -147,9 +147,10 @@ class FormController extends Controller
     public function postedForm(User $user, ClientRequest $request, Ticket $ticket_settings, Ticket_source $ticket_source, Ticket_attachments $ta, CountryCode $code)
     {
         try {
-            $form_extras = $request->except('Name', 'Phone', 'Email', 'Subject', 'Details', 'helptopic', '_wysihtml5_mode', '_token', 'mobile', 'Code', 'priority', 'attachment');
+            $form_extras = $request->except('Name', 'Phone', 'Email', 'Subject', 'Details', 'helptopic', '_wysihtml5_mode', '_token', 'mobile', 'Code', 'priority', 'attachment', 'type_id');
             $name = $request->input('Name');
             $phone = $request->input('Phone');
+            $type_id = $request->input('type_id');
             if ($request->input('Email')) {
                 if ($request->input('Email')) {
                     $email = $request->input('Email');
@@ -223,7 +224,7 @@ class FormController extends Controller
                 }
             }
             \Event::fire(new \App\Events\ClientTicketFormPost($form_extras, $email, $source));
-            $result = $this->TicketWorkflowController->workflow($email, $name, $subject, $details, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $department, $assignto, $team_assign, $status, $form_extras, $auto_response);
+            $result = $this->TicketWorkflowController->workflow($email, $name, $subject, $details, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $department, $assignto, $team_assign, $status, $form_extras, $auto_response, $type_id);
             // dd($result);
             if ($result[1] == 1) {
                 $ticketId = Tickets::where('ticket_number', '=', $result[0])->first();
@@ -281,6 +282,7 @@ class FormController extends Controller
                 $helptopic = $tickets->help_topic_id;
                 $sla = $tickets->sla;
                 $priority = $tickets->priority_id;
+                $type_id = $tickets->type_id;
                 $source = $tickets->source;
                 $collaborator = '';
                 $dept = $tickets->dept_id;
@@ -290,7 +292,7 @@ class FormController extends Controller
                 $ticket_status = null;
                 $auto_response = 0;
 
-                $this->TicketWorkflowController->workflow($fromaddress, $fromname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $dept, $assign, $team_assign, $ticket_status, $form_data, $auto_response);
+                $this->TicketWorkflowController->workflow($fromaddress, $fromname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $dept, $assign, $team_assign, $ticket_status, $form_data, $auto_response, $type_id);
 
                 return \Redirect::back()->with('success1', Lang::get('lang.successfully_replied'));
             } else {

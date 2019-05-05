@@ -40,10 +40,10 @@ class TicketWorkflowController extends Controller
      *
      * @return type response
      */
-    public function workflow($fromaddress, $fromname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $dept, $assign, $team_assign, $ticket_status, $form_data, $auto_response)
+    public function workflow($fromaddress, $fromname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $collaborator, $dept, $assign, $team_assign, $ticket_status, $form_data, $auto_response, $type_id)
     {
         $contact_details = ['email' => $fromaddress, 'email_name' => $fromname, 'subject' => $subject, 'message' => $body];
-        $ticket_settings_details = ['help_topic' => $helptopic, 'sla' => $sla, 'priority' => $priority, 'source' => $source, 'dept' => $dept, 'assign' => $assign, 'team' => $team_assign, 'status' => $ticket_status, 'reject' => false];
+        $ticket_settings_details = ['help_topic' => $helptopic, 'sla' => $sla, 'priority' => $priority, 'source' => $source, 'dept' => $dept, 'assign' => $assign, 'team' => $team_assign, 'status' => $ticket_status, 'reject' => false, 'type_id' => $type_id];
         // get all the workflow common to the entire system which includes any type of ticket creation where the execution order of the workflow should be starting with ascending order
         $workflows = WorkflowName::where('target', '=', 'A-0')->where('status', '=', '1')->orderBy('order', 'asc')->get();
         foreach ($workflows as $workflow) {
@@ -171,7 +171,7 @@ class TicketWorkflowController extends Controller
         if ($ticket_settings_details['reject'] == true) {
             return ['0' => false, '1' => false];
         } else {
-            $create_ticket = $this->TicketController->create_user($contact_details['email'], $contact_details['email_name'], $contact_details['subject'], $contact_details['message'], $phone, $phonecode, $mobile_number, $ticket_settings_details['help_topic'], $ticket_settings_details['sla'], $ticket_settings_details['priority'], $source, $collaborator, $ticket_settings_details['dept'], $ticket_settings_details['assign'], $form_data, $auto_response, $ticket_settings_details['status']);
+            $create_ticket = $this->TicketController->create_user($contact_details['email'], $contact_details['email_name'], $contact_details['subject'], $contact_details['message'], $phone, $phonecode, $mobile_number, $ticket_settings_details['help_topic'], $ticket_settings_details['sla'], $ticket_settings_details['priority'], $source, $collaborator, $ticket_settings_details['dept'], $ticket_settings_details['assign'], $form_data, $auto_response, $ticket_settings_details['status'], $ticket_settings_details['type_id']);
 
             return $create_ticket;
         }

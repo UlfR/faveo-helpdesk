@@ -266,6 +266,7 @@ if ($thread->title != "") {
                                 <tr><td><b>{!! Lang::get('lang.email') !!}:</b></td>        <td>{{str_limit($user->email,30)}}</td></tr>
                                 @if($user->ban > 0)  <tr><td style="color:orange;"><i class="fa fa-warning"></i><b>
                                             {!!  Lang::get('lang.this_ticket_is_under_banned_user')!!}</td><td></td></tr>@endif
+                                <tr><td><b>{!! Lang::get('lang.type') !!}:</b></td>        <td>{{$tickets->type()}}</td></tr>
                             </div>
                         </table>
                     </div>
@@ -896,6 +897,21 @@ if ($thread->title != "") {
                                         @endforeach
                                     </select>
                                     <spam id="error-priority" style="display:none" class="help-block text-red">This is a required field</spam>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{!! Lang::get('lang.type') !!} <span class="text-red"> *</span></label>
+                                    <?php $type_ids = [0, 1, 2]; $types = App\Model\helpdesk\Ticket\Tickets::TYPES; ?>
+                                    <select class="form-control" name="type_id">
+                                        @foreach($type_ids as $type_id)
+                                            <option value="{!! $type_id !!}" <?php
+                                                if ($tickets->type_id == $type_id) {echo "selected";}
+                                                ?> >{!! $types[$type_id] !!}</option>
+                                        @endforeach
+                                    </select>
+                                    <spam id="error-type_id" style="display:none" class="help-block text-red">This is a required field</spam>
                                 </div>
                             </div>
                         </div>

@@ -234,6 +234,16 @@ class="active"
                     </div>
                     
                 </div>
+                <!-- type -->
+                <div class="row">
+                    <div class="col-md-1">
+                        <label>{!! Lang::get('lang.type') !!}:</label>
+                    </div>
+                    <div class="col-md-3">
+                        {!! Form::select('type_id', ['Type'=>App\Model\helpdesk\Ticket\Tickets::TYPES],null,['class' => 'form-control select']) !!}
+                    </div>
+
+                </div>
             </div>
              
         </div>

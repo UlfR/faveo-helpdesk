@@ -126,7 +126,7 @@ class TicketController extends Controller
             $source = Ticket_source::where('name', '=', 'agent')->first();
             $headers = null;
             $help = Help_topic::where('id', '=', $helptopic)->first();
-            $form_data = $request->except('name', 'phone', 'email', 'subject', 'body', 'helptopic', '_wysihtml5_mode', '_token', 'mobile', 'code', 'priority', 'attachment', 'first_name', 'last_name', 'sla', 'duedate', 'assignto');
+            $form_data = $request->except('name', 'phone', 'email', 'subject', 'body', 'helptopic', '_wysihtml5_mode', '_token', 'mobile', 'code', 'priority', 'attachment', 'first_name', 'last_name', 'sla', 'duedate', 'assignto', 'type_id');
             $auto_response = 0;
             $status = 1;
             if ($phone != null || $mobile_number != null) {
@@ -159,8 +159,9 @@ class TicketController extends Controller
                     }
                 }
             }
+            $type_id = $request->input('type_id');
             //create user
-            $result = $this->create_user($email, $fullname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source->id, $headers, $help->department, $assignto, $form_data, $auto_response, $status);
+            $result = $this->create_user($email, $fullname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source->id, $headers, $help->department, $assignto, $form_data, $auto_response, $status, $type_id);
             if ($result[1]) {
                 $status = $this->checkUserVerificationStatus();
                 if ($status == 1) {
@@ -465,6 +466,7 @@ class TicketController extends Controller
             $ticket->help_topic_id = Input::get('help_topic');
             $ticket->source = Input::get('ticket_source');
             $ticket->priority_id = Input::get('ticket_priority');
+            $ticket->type_id = Input::get('type_id');
             $dept = Help_topic::select('department')->where('id', '=', $ticket->help_topic_id)->first();
             $ticket->dept_id = $dept->department;
             $ticket->save();
@@ -624,7 +626,7 @@ class TicketController extends Controller
      *
      * @return type bool
      */
-    public function create_user($emailadd, $username, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $auto_response, $status)
+    public function create_user($emailadd, $username, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $auto_response, $status, $type_id)
     {
         // define global variables
         $email;
@@ -709,7 +711,7 @@ class TicketController extends Controller
             $user_id = $checkemail->id;
         }
         \Event::fire(new \App\Events\ClientTicketFormPost($from_data, $emailadd, $source));
-        $ticket_number = $this->check_ticket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $status);
+        $ticket_number = $this->check_ticket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $status, $type_id);
 
         $ticket_number2 = $ticket_number[0];
         $ticketdata = Tickets::where('ticket_number', '=', $ticket_number2)->first();
@@ -896,7 +898,7 @@ class TicketController extends Controller
      *
      * @return type string
      */
-    public function check_ticket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status)
+    public function check_ticket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status, $type_id)
     {
         $read_ticket_number = explode('[#', $subject);
         if (isset($read_ticket_number[1])) {
@@ -949,12 +951,12 @@ class TicketController extends Controller
                     }
                 }
             } else {
-                $ticket_number = $this->createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status);
+                $ticket_number = $this->createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status, $type_id);
 
                 return [$ticket_number, 0];
             }
         } else {
-            $ticket_number = $this->createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status);
+            $ticket_number = $this->createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status, $type_id);
 
             return [$ticket_number, 0];
         }
@@ -972,7 +974,7 @@ class TicketController extends Controller
      *
      * @return type string
      */
-    public function createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status)
+    public function createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status, $type_id)
     {
         $ticket_number = '';
         $max_number = Tickets::whereRaw('id = (select max(`id`) from tickets)')->first();
@@ -986,6 +988,7 @@ class TicketController extends Controller
         $ticket->ticket_number = $this->ticketNumber($ticket_number);
         $ticket->user_id = $user_id;
         $ticket->dept_id = $dept;
+        $ticket->type_id = $type_id;
         $ticket->help_topic_id = $helptopic;
         $ticket->sla = $sla;
         $ticket->assigned_to = $assignto;
