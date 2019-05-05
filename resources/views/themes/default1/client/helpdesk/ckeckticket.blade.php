@@ -19,18 +19,18 @@ $thread = App\Model\helpdesk\Ticket\Ticket_Thread::where('ticket_id', '=', \Cryp
                     <!-- <button type="button" class="btn btn-default"><i class="fa fa-edit" style="color:green;"> </i> Edit</button> -->                            
                     {{-- <button type="button" class="btn btn-default"><i class="fa fa-print" style="color:blue;"> </i> {!! link_to_route('ticket.print','Print',[$tickets->id]) !!}</button> --}}
                     <!-- </div> -->
-                    @if( $common_setting->status == '1')
+                    @if( $common_setting->status == '1' && $tickets->status != 3)
                     <div class="btn-group"> 
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-exchange" style="color:teal;"> </i> 
-                            {!! Lang::get('lang.change_status') !!} <span class="caret"></span>
-                        </button>
+{{--                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-exchange" style="color:teal;"> </i>--}}
+{{--                            {!! Lang::get('lang.change_status') !!} <span class="caret"></span>--}}
+{{--                        </button>--}}
+                        <a class="btn btn-default" href="#" id="close"><i class="fa fa-check" style="color:#15F109;"> </i>{!! Lang::get('lang.close') !!}</a>
                         <?php $statuses = \App\Model\helpdesk\Ticket\Ticket_Status::all(); ?>
-
-                        <ul class="dropdown-menu">
-                            <li><a href="#" id="open"><i class="fa fa-folder-open" style="color:#FFD600;"> </i>{!! Lang::get('lang.open') !!}</a></li>
-                            <li><a href="#" id="close"><i class="fa fa-check" style="color:#15F109;"> </i>{!! Lang::get('lang.close') !!}</a></li>
-                            <li><a href="#" id="resolved"><i class="fa fa-check-circle " style="color:#0EF1BE;"> </i> {!! Lang::get('lang.resolved') !!}</a></li>
-                        </ul>
+{{--                        <ul class="dropdown-menu">--}}
+{{--                            <li><a href="#" id="open"><i class="fa fa-folder-open" style="color:#FFD600;"> </i>{!! Lang::get('lang.open') !!}</a></li>--}}
+{{--                            <li><a href="#" id="close"><i class="fa fa-check" style="color:#15F109;"> </i>{!! Lang::get('lang.close') !!}</a></li>--}}
+{{--                            <li><a href="#" id="resolved"><i class="fa fa-check-circle " style="color:#0EF1BE;"> </i> {!! Lang::get('lang.resolved') !!}</a></li>--}}
+{{--                        </ul>--}}
                     </div>@endif
                     {!! Form::close() !!}
                 </div>
