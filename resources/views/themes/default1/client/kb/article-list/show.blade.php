@@ -52,7 +52,7 @@ $category_id = $all->pluck('category_id')->toArray();
         </div><!-- .entry-content -->
 
     </article><!-- .hentry -->
-    <?php $comments = App\Model\kb\Comment::where('article_id', $arti->id)->where('status', '1')->get(); ?>
+    <?php $comments = []; #App\Model\kb\Comment::where('article_id', $arti->id)->where('status', '1')->get(); ?>
 
     <div id="comments" class="comments-area">
         @foreach($comments as $comment)
@@ -84,7 +84,7 @@ $category_id = $all->pluck('category_id')->toArray();
             </li><!-- .comment -->
         </ol><!-- .comment-list -->
         @endforeach
-        <div id="respond" class="comment-respond form-border">
+        <!-- div id="respond" class="comment-respond form-border">
             <h3 id="reply-title" class="comment-reply-title section-title">{!! Lang::get('lang.leave_a_reply') !!}</h3>
             {!! Form::open(['method'=>'post','url'=>'postcomment/'.$arti->slug]) !!}
             <div class="row">
@@ -119,7 +119,7 @@ $category_id = $all->pluck('category_id')->toArray();
           
 
             {!! Form::close() !!}
-        </div><!-- #respond -->
+        </div--><!-- #respond -->
     </div>
 </div>						
 
