@@ -20,4 +20,16 @@ class Help_topic extends BaseModel
 
         return $this->belongsTo($related, $foreignKey);
     }
+
+    public function children() {
+        return self::where('status', '=', 1)->where('parent_topic', '=', $this->topic)->get();
+    }
+
+    public function desc() {
+        if ($this->parent_topic != '') {
+            return "{$this->parent_topic} > {$this->topic}";
+        } else {
+            return $this->topic;
+        }
+    }
 }

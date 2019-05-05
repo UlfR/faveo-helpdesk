@@ -148,23 +148,34 @@ class = "active"
                 {!! Form::hidden('Phone',Auth::user()->phone_number,['class' => 'form-control']) !!}
  
            @endif
+            <?php
+            $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '=', '')->get();
+            $subtopics = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '!=', '')->get();
+            $topic_by_name = $helptopic->map(function($a){return [$a->id, $a->topic];})->reduce(function($a,$v){$a[$v[1]] = $v[0]; return $a;}, []);
+            ?>
+            {!! Form::hidden('helptopic',null,['class' => 'form-control']) !!}
             <div class="col-md-12 form-group {{ $errors->has('help_topic') ? 'has-error' : '' }}">
                 {!! Form::label('help_topic', Lang::get('lang.choose_a_help_topic')) !!} 
                 {!! $errors->first('help_topic', '<spam class="help-block">:message</spam>') !!}
-                <?php
-                $forms = App\Model\helpdesk\Form\Forms::get();
-                $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->get();
-                ?>                  
-                <select name="helptopic" class="form-control" id="selectid">
-                    
+                <select name="helptopic_par" class="form-control" id="selectid">
                     @foreach($helptopic as $topic)
                     <option value="{!! $topic->id !!}">{!! $topic->topic !!}</option>
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-12 form-group {{ $errors->has('help_sub_topic') ? 'has-error' : '' }}">
+                {!! Form::label('help_sub_topic', Lang::get('lang.choose_a_help_sub_topic')) !!}
+                {!! $errors->first('help_sub_topic', '<spam class="help-block">:message</spam>') !!}
+                <select name="helptopic_sub" class="form-control" id="selectsubid">
+                    <option value="">-</option>
+                    @foreach($subtopics as $topic)
+                        <option data-parent="{!! $topic_by_name[$topic->parent_topic] !!}" class='subtopic-opt' value="{!! $topic->id !!}" style="display: none">{!! $topic->topic !!}</option>
+                    @endforeach
+                </select>
+            </div>
             <!-- priority -->
              <?php 
-             $Priority = App\Model\helpdesk\Settings\CommonSettings::select('status')->where('option_name','=', 'user_priority')->first(); 
+             $Priority = App\Model\helpdesk\Settings\CommonSettings::select('status')->where('option_name','=', 'user_priority')->first();
              $user_Priority=$Priority->status;
             ?>
              
@@ -180,7 +191,7 @@ class = "active"
                         <label>{!! Lang::get('lang.priority') !!}:</label>
                     </div>
                     <div class="col-md-12">
-                        <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get(); ?>
+                        <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get();?>
                         {!! Form::select('priority', ['Priority'=>$Priority->pluck('priority_desc','priority_id')->toArray()],null,['class' => 'form-control select']) !!}
                     </div>
                  </div>
@@ -229,12 +240,30 @@ class = "active"
 -->
 <script type="text/javascript">
 $(document).ready(function(){
-   var helpTopic = $("#selectid").val();
+   var helpTopic = $('input[name="helptopic"]').val();
+   var parentT = $('.subtopic-opt[value="' + helpTopic + '"]').first().data('parent');
+   if (parentT) {
+       $("#selectid").val(parentT);
+       $("#selectsubid").val(helpTopic);
+   } else {
+       $("#selectid").val(helpTopic);
+       $("#selectsubid").val('');
+   }
    send(helpTopic);
    $("#selectid").on("change",function(){
        helpTopic = $("#selectid").val();
+       $("#selectsubid").val('');
        send(helpTopic);
+       $('.subtopic-opt').hide().parent().find('[data-parent="' + helpTopic + '"]').show()
+       $('input[name="helptopic"]').val(helpTopic);
    });
+    $("#selectsubid").on("change",function(){
+        helpTopic = $("#selectid").val();
+        helpSopic = $("#selectsubid").val();
+        // send(helpTopic);
+        // $('.subtopic-opt').hide().parent().find('[data-parent="' + helpTopic + '"]').show()
+        $('input[name="helptopic"]').val(helpSopic != '' ? helpSopic : helpTopic);
+    });
    function send(helpTopic){
        $.ajax({
            url:"{{url('/get-helptopic-form')}}",
