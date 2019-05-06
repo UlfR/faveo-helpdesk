@@ -95,18 +95,13 @@ class="active"
             </div>
             <div class="col-xs-6 form-group {{ $errors->has('organization') ? 'has-error' : '' }}">
                 {!! Form::label('organization',Lang::get('lang.organization')) !!}
-               
-
-                  <select class="form-control" name="org_id">
-                                        @foreach($orgs as $org)
-                                        <option value="{!! $org->id !!}" <?php
-                                        if ($org->id==$organization_id) {
-                                            echo 'selected';
-                                        }
-                                        ?> >{!! $org->name !!}</option>
-                                        @endforeach
-                                    </select>
-                
+                <select class="form-control" name="org_id[]" id="org_select" multiple="multiple">
+                    @foreach($orgs as $org)
+                        <option value="{!! $org->id !!}" <?php if (in_array($org->id, $organization_ids)) {
+                            echo 'selected=selected';
+                        } ?> >{!! $org->name !!}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="row">     
@@ -185,7 +180,7 @@ class="active"
         $('input[type="radio"]').iCheck({
             radioClass: 'iradio_flat-blue'
         });
-    
+        $('#org_select').val([<?php echo implode(', ', $organization_ids)?>]).select2();
     });        
 </script>
 @stop

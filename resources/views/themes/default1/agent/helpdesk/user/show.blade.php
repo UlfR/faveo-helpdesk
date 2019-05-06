@@ -124,43 +124,21 @@ class="active"
             <div class="box-footer">
                 <div id="refresh-org">
                     <?php
-                    $user_org = App\Model\helpdesk\Agent_panel\User_org::where('user_id', '=', $users->id)->first();
+                    $user_org = App\Model\helpdesk\Agent_panel\User_org::where('user_id', '=', $users->id)->pluck('org_id')->toArray();
+//                    $organization_ids = User_org::where('user_id', '=', $id)->pluck('org_id')->toArray();
+
                     ?>
-                    @if($user_org == null)
+                    @if(count($user_org) == 0)
                     <b>{!! Lang::get('lang.organization') !!}</b>
-                    <a href="" class="pull-right"  data-toggle="modal" data-target="#assign"><i class="fa fa-hand-o-right" style="color:orange;"> </i> {!! Lang::get('lang.assign') !!} </a>
-                    <a href="" data-toggle="modal" data-target="#create_org" class="pull-right"> {{Lang::get('lang.create')}} |&nbsp;</a>
+{{--                    <a href="" class="pull-right"  data-toggle="modal" data-target="#assign"><i class="fa fa-hand-o-right" style="color:orange;"> </i> {!! Lang::get('lang.assign') !!} </a>--}}
+{{--                    <a href="" data-toggle="modal" data-target="#create_org" class="pull-right"> {{Lang::get('lang.create')}} |&nbsp;</a>--}}
                     @endif
-                    @if($user_org != null)
-                    <?php
-                    $org_id = $user_org->org_id;
-                    $organization = App\Model\helpdesk\Agent_panel\Organization::where('id', '=', $org_id)->first();
-                    ?>
+                    @if(count($user_org) > 0)
+                    <?php $organizations = App\Model\helpdesk\Agent_panel\Organization::find($user_org);?>
                     <b>{!! Lang::get('lang.organization') !!}</b>
-
-                    &nbsp;&nbsp;&nbsp;
-
-                    <a href=""   data-toggle="modal" data-target="#editassign" title="{{$organization->name}}"> <span style="color:green;">{{str_limit($organization->name,15)}}</span> </a>
-
-
-                    <a class="pull-right" href="#" data-toggle="modal" data-target="#{{$org_id}}delete" title="{!! Lang::get('lang.remove') !!}"><i class="fa fa-times" style="color:red;"> </i></a> 
-                    <div class="modal fade" id="{{$org_id}}delete">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Remove user from Organization</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to Remove ?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                                    {!! link_to_route('removeuser.org','Remove User',[$org_id],['id'=>'delete','class'=>'btn btn-danger btn-sm']) !!}
-                                </div>
-                            </div> 
-                        </div>
-                    </div> 
+                        @foreach($organizations as $org)
+                            <a class="pull-right"><span style="color:green;">{{str_limit($org->name,15)}}</span>,&nbsp;</a>
+                        @endforeach
                     @endif
 
                 </div>

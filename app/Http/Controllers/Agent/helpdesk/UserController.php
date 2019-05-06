@@ -661,13 +661,14 @@ class UserController extends Controller
             $orgs = Organization::all();
             // dd($org);
             $organization_id = User_org::where('user_id', '=', $id)->pluck('org_id')->first();
+            $organization_ids = User_org::where('user_id', '=', $id)->pluck('org_id')->toArray();
             $teams = Teams::where('status', '=', 1)->pluck('id', 'name')->toArray();
             $assign = Assign_team_agent::where('agent_id', $id)->pluck('team_id')->toArray();
 
             // $org_name=Organization::where('id','=',$org_id)->pluck('name')->first();
             // dd($org_name);
 
-            return view('themes.default1.agent.helpdesk.user.edit', compact('users', 'orgs', 'settings', 'email_mandatory', 'organization_id', 'teams', 'assign'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.agent.helpdesk.user.edit', compact('users', 'orgs', 'settings', 'email_mandatory', 'organization_id', 'teams', 'assign', 'organization_ids'))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
         }
@@ -978,17 +979,16 @@ class UserController extends Controller
         return $randomString;
     }
 
-    public function storeUserOrgRelation($userid, $orgid)
+    public function storeUserOrgRelation($userid, $orgids)
     {
         $org_relations = new User_org();
-        $org_relation = $org_relations->where('user_id', $userid)->first();
-        if ($org_relation) {
-            $org_relation->delete();
+        $org_relations->where('user_id', $userid)->delete();
+        foreach ($orgids as $orgid) {
+            $org_relations->create([
+                'user_id' => $userid,
+                'org_id'  => $orgid,
+            ]);
         }
-        $org_relations->create([
-            'user_id' => $userid,
-            'org_id'  => $orgid,
-        ]);
     }
 
     public function getExportUser()

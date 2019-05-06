@@ -203,10 +203,11 @@ class AgentController extends Controller
             $assign = $team_assign_agent->where('agent_id', $id)->pluck('team_id')->toArray();
             $orgs = Organization::all();
             $organization_id = User_org::where('user_id', '=', $id)->pluck('org_id')->first();
+            $organization_ids = User_org::where('user_id', '=', $id)->pluck('org_id')->toArray();
 
             return view('themes.default1.admin.helpdesk.agent.agents.edit', compact(
                 'teams', 'assign', 'table', 'teams1', 'selectedTeams', 'user', 'timezones', 'groups', 'departments', 'team', 'exp', 'counted',
-                'orgs', 'organization_id'
+                'orgs', 'organization_id', 'organization_ids'
             ))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect('agents')->with('fail', Lang::get('lang.failed_to_edit_agent'));
@@ -325,16 +326,15 @@ class AgentController extends Controller
         return $randomString;
     }
 
-    public function storeUserOrgRelation($userid, $orgid)
+    public function storeUserOrgRelation($userid, $orgids)
     {
         $org_relations = new User_org();
-        $org_relation = $org_relations->where('user_id', $userid)->first();
-        if ($org_relation) {
-            $org_relation->delete();
+        $org_relations->where('user_id', $userid)->delete();
+        foreach ($orgids as $orgid) {
+            $org_relations->create([
+                'user_id' => $userid,
+                'org_id'  => $orgid,
+            ]);
         }
-        $org_relations->create([
-            'user_id' => $userid,
-            'org_id'  => $orgid,
-        ]);
     }
 }
