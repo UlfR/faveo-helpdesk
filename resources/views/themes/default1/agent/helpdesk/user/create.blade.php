@@ -148,6 +148,15 @@ class="active"
             {!! Form::label('internal_note',Lang::get('lang.internal_notes')) !!}
             {!! Form::textarea('internal_note',null,['class' => 'form-control', 'size' => '30x5']) !!}
         </div>
+        <!-- Assign team -->
+        <div class="form-group {{ $errors->has('team') ? 'has-error' : '' }}">
+            {!! Form::label('agent_tzone',Lang::get('lang.assigned_team')) !!} <span class="text-red"> *</span>
+            @foreach($teams as $key => $val)
+                <div class="form-group ">
+                    <input type="checkbox" name="team[]" value="{!! $val !!}"  > {!! $key !!}<br/>
+                </div>
+            @endforeach
+        </div>
         <!-- Send email to user about registration password -->
         <div class="form-group">
             <input type="checkbox" name="send_email" checked> &nbsp;<label> {{ Lang::get('lang.send_password_via_email')}}</label>

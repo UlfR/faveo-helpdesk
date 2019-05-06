@@ -156,6 +156,20 @@ class="active"
             {!! Form::label('internal_note',Lang::get('lang.internal_notes')) !!}
             {!! Form::textarea('internal_note',null,['class' => 'form-control', 'size' => '30x5']) !!}
         </div>
+
+        <!-- team -->
+        <div class="{{ $errors->has('team') ? 'has-error' : '' }}">
+            {!! Form::label('agent_tzone',Lang::get('lang.assigned_team')) !!} <span class="text-red"> *</span>
+        </div>
+        @foreach($teams as $key => $val)
+            <div class="form-group ">
+                <input type="checkbox" name="team[]" value="<?php echo $val; ?> " <?php
+                    if (in_array($val, $assign)) {
+                        echo ('checked');
+                    }
+                    ?> > &nbsp;<?php echo "  " . $key; ?><br/>
+            </div>
+        @endforeach
     </div>
     <div class="box-footer">
         {!! Form::submit(Lang::get('lang.update'),['class'=>'form-group btn btn-primary'])!!}

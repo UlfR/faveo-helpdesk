@@ -19,6 +19,7 @@ use App\Http\Requests\helpdesk\Sys_userRequest;
 use App\Http\Requests\helpdesk\Sys_userUpdate;
 // models
 use App\Model\helpdesk\Agent\Assign_team_agent;
+use App\Model\helpdesk\Agent\Teams;
 use App\Model\helpdesk\Agent_panel\Organization;
 use App\Model\helpdesk\Agent_panel\User_org;
 use App\Model\helpdesk\Notification\Notification;
@@ -258,8 +259,9 @@ class UserController extends Controller
             $location = GeoIP::getLocation();
             $phonecode = $code->where('iso', '=', $location->iso_code)->first();
             $org = Organization::pluck('name', 'id')->toArray();
+            $teams = Teams::where('status', '=', 1)->pluck('id', 'name')->toArray();
 
-            return view('themes.default1.agent.helpdesk.user.create', compact('org', 'settings', 'email_mandatory'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.agent.helpdesk.user.create', compact('org', 'settings', 'email_mandatory', 'teams'))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->errorInfo[2]);
         }
@@ -298,6 +300,15 @@ class UserController extends Controller
         $password = $this->generateRandomString();
         $user->password = Hash::make($password);
         $user->role = 'user';
+
+        $id = $user->id;
+        $table = Assign_team_agent::where('agent_id', $id);
+        $table->delete();
+        $requests = $request->input('team');
+        // inserting team details
+        foreach ($requests as $req) {
+            DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $id]);
+        }
 
         try {
             if ($request->get('country_code') == '' && ($request->get('phone_number') != '' || $request->get('mobile') != '')) {
@@ -650,11 +661,13 @@ class UserController extends Controller
             $orgs = Organization::all();
             // dd($org);
             $organization_id = User_org::where('user_id', '=', $id)->pluck('org_id')->first();
+            $teams = Teams::where('status', '=', 1)->pluck('id', 'name')->toArray();
+            $assign = Assign_team_agent::where('agent_id', $id)->pluck('team_id')->toArray();
 
             // $org_name=Organization::where('id','=',$org_id)->pluck('name')->first();
             // dd($org_name);
 
-            return view('themes.default1.agent.helpdesk.user.edit', compact('users', 'orgs', '$settings', '$email_mandatory', 'organization_id'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.agent.helpdesk.user.edit', compact('users', 'orgs', 'settings', 'email_mandatory', 'organization_id', 'teams', 'assign'))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
         }
@@ -676,6 +689,13 @@ class UserController extends Controller
         $users = $user->whereId($id)->first();
         /* Update the value by selected field  */
         /* Check whether function success or not */
+        $table = Assign_team_agent::where('agent_id', $id);
+        $table->delete();
+        $requests = $request->input('team');
+        // inserting team details
+        foreach ($requests as $req) {
+            DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $id]);
+        }
         try {
             if ($request->get('country_code') == '' && ($request->get('phone_number') != '' || $request->get('mobile') != '')) {
                 return redirect()->back()->with(['fails' => Lang::get('lang.country-code-required-error'), 'country_code_error' => 1])->withInput();

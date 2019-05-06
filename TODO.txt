@@ -1,2 +1,36 @@
 ALTER TABLE `tickets` ADD `type_id` INT NOT NULL DEFAULT '1' AFTER `updated_at`, ADD INDEX `type_id_idx` (`type_id`);
 ALTER TABLE `department` ADD `parent` INT NOT NULL AFTER `updated_at`, ADD INDEX `parent_idx` (`parent`);
+
+client:
+multi orgs
+multi deps
+
+agent:
+multi deps
+multi orgs
+
+tickets:
+sla by priority
+subtopic is required
+telegram
+sms
+
+categories:
+tree in CUI
+visibility by org
+visibility by dep
+visibility by team
+
+topics:
+visibility by org
+visibility by dep
+visibility by team
+
+articles:
+visibility by org
+visibility by dep
+visibility by team
+
+misc:
+cleanup main page
+translate
