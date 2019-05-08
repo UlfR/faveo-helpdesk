@@ -19,9 +19,11 @@ use App\Http\Requests\helpdesk\Sys_userRequest;
 use App\Http\Requests\helpdesk\Sys_userUpdate;
 // models
 use App\Model\helpdesk\Agent\Assign_team_agent;
+use App\Model\helpdesk\Agent\Department;
 use App\Model\helpdesk\Agent\Teams;
 use App\Model\helpdesk\Agent_panel\Organization;
 use App\Model\helpdesk\Agent_panel\User_org;
+use App\Model\helpdesk\Agent_panel\User_dep;
 use App\Model\helpdesk\Notification\Notification;
 use App\Model\helpdesk\Notification\UserNotification;
 use App\Model\helpdesk\Settings\CommonSettings;
@@ -260,8 +262,11 @@ class UserController extends Controller
             $phonecode = $code->where('iso', '=', $location->iso_code)->first();
             $org = Organization::pluck('name', 'id')->toArray();
             $teams = Teams::where('status', '=', 1)->pluck('id', 'name')->toArray();
+            $deps = Department::pluck('name', 'id')->toArray();
 
-            return view('themes.default1.agent.helpdesk.user.create', compact('org', 'settings', 'email_mandatory', 'teams'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.agent.helpdesk.user.create', compact(
+                'org', 'settings', 'email_mandatory', 'teams', 'deps'
+            ))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->errorInfo[2]);
         }
@@ -301,15 +306,6 @@ class UserController extends Controller
         $user->password = Hash::make($password);
         $user->role = 'user';
 
-        $id = $user->id;
-        $table = Assign_team_agent::where('agent_id', $id);
-        $table->delete();
-        $requests = $request->input('team');
-        // inserting team details
-        foreach ($requests as $req) {
-            DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $id]);
-        }
-
         try {
             if ($request->get('country_code') == '' && ($request->get('phone_number') != '' || $request->get('mobile') != '')) {
                 return redirect()->back()->with(['fails' => Lang::get('lang.country-code-required-error'), 'country_code_error' => 1])->withInput();
@@ -321,10 +317,24 @@ class UserController extends Controller
             }
             // save user credentails
             if ($user->save() == true) {
+                $table = Assign_team_agent::where('agent_id', $user->id);
+                $table->delete();
+                $requests = $request->input('team');
+                // inserting team details
+                foreach ($requests as $req) {
+                    DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $user->id]);
+                }
+
                 if ($request->input('org_id') != '') {
                     $orgid = $request->input('org_id');
                     $this->storeUserOrgRelation($user->id, $orgid);
                 }
+
+                if ($request->input('user_dep') != '') {
+                    $dep_ids = $request->input('user_dep');
+                    $this->storeUserDepRelation($user->id, $dep_ids);
+                }
+
                 // fetch user credentails to send mail
                 $name = $user->first_name;
                 $email = $user->email;
@@ -665,10 +675,15 @@ class UserController extends Controller
             $teams = Teams::where('status', '=', 1)->pluck('id', 'name')->toArray();
             $assign = Assign_team_agent::where('agent_id', $id)->pluck('team_id')->toArray();
 
+            $deps = Department::all();
+            $dep_ids = User_dep::where('user_id', '=', $id)->pluck('dep_id')->toArray();
+
             // $org_name=Organization::where('id','=',$org_id)->pluck('name')->first();
             // dd($org_name);
 
-            return view('themes.default1.agent.helpdesk.user.edit', compact('users', 'orgs', 'settings', 'email_mandatory', 'organization_id', 'teams', 'assign', 'organization_ids'))->with('phonecode', $phonecode->phonecode);
+            return view('themes.default1.agent.helpdesk.user.edit', compact(
+                'users', 'orgs', 'settings', 'email_mandatory', 'organization_id', 'teams', 'assign', 'organization_ids', 'dep_ids', 'deps'
+            ))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
         }
@@ -713,8 +728,11 @@ class UserController extends Controller
             $users->save();
             if ($request->input('org_id') != '') {
                 $orgid = $request->input('org_id');
-
                 $this->storeUserOrgRelation($id, $orgid);
+            }
+            if ($request->input('user_dep') != '') {
+                $dep_ids = $request->input('user_dep');
+                $this->storeUserDepRelation($id, $dep_ids);
             }
             /* redirect to Index page with Success Message */
             return redirect('user')->with('success', Lang::get('lang.User-profile-Updated-Successfully'));
@@ -987,6 +1005,18 @@ class UserController extends Controller
             $org_relations->create([
                 'user_id' => $userid,
                 'org_id'  => $orgid,
+            ]);
+        }
+    }
+
+    public function storeUserDepRelation($userid, $dep_ids)
+    {
+        $dep_relations = new User_dep();
+        $dep_relations->where('user_id', $userid)->delete();
+        foreach ($dep_ids as $dep_id) {
+            $dep_relations->create([
+                'user_id' => $userid,
+                'dep_id'  => $dep_id,
             ]);
         }
     }

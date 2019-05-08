@@ -1,37 +1,42 @@
 ALTER TABLE `tickets` ADD `type_id` INT NOT NULL DEFAULT '1' AFTER `updated_at`, ADD INDEX `type_id_idx` (`type_id`);
 ALTER TABLE `department` ADD `parent` INT NOT NULL AFTER `updated_at`, ADD INDEX `parent_idx` (`parent`);
-
-client:
-multi orgs
-multi deps
-
-agent:
-multi deps
-multi orgs
-
-tickets:
-sla by priority
-subtopic is required
-telegram
-sms
+DROP TABLE IF EXISTS `user_assign_department`;
+CREATE TABLE `user_assign_department` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `dep_id` int(10) UNSIGNED DEFAULT NULL,
+  `user_id` int(10) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 categories:
-tree in CUI
-visibility by org
-visibility by dep
-visibility by team
+(G)visibility by org
+(G)visibility by dep
+(G)visibility by team
+
+critical:
+tickets:
+(Z)sla by priority
+(Z)subtopic is required
+(Z)telegram
+(Z)sms
+
+categories:
+(Z)tree in CUI
 
 non critical:
 topics:
-visibility by org
-visibility by dep
-visibility by team
+(Z)visibility by org
+(Z)visibility by dep
+(Z)visibility by team
 
 articles:
-visibility by org
-visibility by dep
-visibility by team
+(Z)visibility by org
+(Z)visibility by dep
+(Z)visibility by team
 
 misc:
 cleanup main page
 translate
+remove deps, orgs and teams with user remove
+agent remove

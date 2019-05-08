@@ -14,6 +14,7 @@ use App\Model\helpdesk\Agent\Department;
 use App\Model\helpdesk\Agent\Groups;
 use App\Model\helpdesk\Agent\Teams;
 use App\Model\helpdesk\Agent_panel\Organization;
+use App\Model\helpdesk\Agent_panel\User_dep;
 use App\Model\helpdesk\Agent_panel\User_org;
 use App\Model\helpdesk\Utility\CountryCode;
 use App\Model\helpdesk\Utility\Timezones;
@@ -135,21 +136,23 @@ class AgentController extends Controller
         // generate password and has immediately to store
         $password = $this->generateRandomString();
         $user->password = Hash::make($password);
-        // fetching all the team details checked for this user
-        $requests = $request->input('team');
-        // get user id of the inserted user detail
-        $id = $user->id;
-        // insert team
-        foreach ($requests as $req) {
-            // insert all the selected team id to the team and agent relationship table
-            DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $id]);
-        }
         // save user credentails
         if ($user->save() == true) {
+            $requests = $request->input('team');
+            foreach ($requests as $req) {
+                DB::insert('insert into team_assign_agent (team_id, agent_id) values (?,?)', [$req, $user->id]);
+            }
+
             if ($request->input('org_id') != '') {
                 $orgid = $request->input('org_id');
                 $this->storeUserOrgRelation($user->id, $orgid);
             }
+
+            if ($request->input('user_dep') != '') {
+                $dep_ids = $request->input('user_dep');
+                $this->storeUserDepRelation($user->id, $dep_ids);
+            }
+
             // fetch user credentails to send mail
             $name = $user->first_name;
             $email = $user->email;
@@ -204,10 +207,11 @@ class AgentController extends Controller
             $orgs = Organization::all();
             $organization_id = User_org::where('user_id', '=', $id)->pluck('org_id')->first();
             $organization_ids = User_org::where('user_id', '=', $id)->pluck('org_id')->toArray();
+            $dep_ids = User_dep::where('user_id', '=', $id)->pluck('dep_id')->toArray();
 
             return view('themes.default1.admin.helpdesk.agent.agents.edit', compact(
                 'teams', 'assign', 'table', 'teams1', 'selectedTeams', 'user', 'timezones', 'groups', 'departments', 'team', 'exp', 'counted',
-                'orgs', 'organization_id', 'organization_ids'
+                'orgs', 'organization_id', 'organization_ids', 'dep_ids'
             ))->with('phonecode', $phonecode->phonecode);
         } catch (Exception $e) {
             return redirect('agents')->with('fail', Lang::get('lang.failed_to_edit_agent'));
@@ -262,8 +266,12 @@ class AgentController extends Controller
 
             if ($request->input('org_id') != '') {
                 $orgid = $request->input('org_id');
-
                 $this->storeUserOrgRelation($id, $orgid);
+            }
+
+            if ($request->input('user_dep') != '') {
+                $dep_ids = $request->input('user_dep');
+                $this->storeUserDepRelation($id, $dep_ids);
             }
 
             return redirect('agents')->with('success', Lang::get('lang.agent_updated_sucessfully'));
@@ -334,6 +342,18 @@ class AgentController extends Controller
             $org_relations->create([
                 'user_id' => $userid,
                 'org_id'  => $orgid,
+            ]);
+        }
+    }
+
+    public function storeUserDepRelation($userid, $dep_ids)
+    {
+        $dep_relations = new User_dep();
+        $dep_relations->where('user_id', $userid)->delete();
+        foreach ($dep_ids as $dep_id) {
+            $dep_relations->create([
+                'user_id' => $userid,
+                'dep_id'  => $dep_id,
             ]);
         }
     }

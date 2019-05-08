@@ -104,6 +104,10 @@ class="active"
                 {!! Form::label('organization',Lang::get('lang.organization')) !!}
                 {!! Form::select('org_id[]', $org, null, ['class' => 'form-control','id' => 'org_select', 'multiple' => 'multiple']) !!}
             </div>
+            <div class="col-xs-6 form-group {{ $errors->has('user_dep') ? 'has-error' : '' }}">
+                {!! Form::label('user_dep',Lang::get('lang.user_dep')) !!}
+                {!! Form::select('user_dep[]', $deps, null, ['class' => 'form-control','id' => 'user_dep', 'multiple' => 'multiple']) !!}
+            </div>
         </div>
         <div class="row">
             <div class="col-xs-1 form-group {{ $errors->has('country_code') ? 'has-error' : '' }}">
@@ -176,6 +180,7 @@ class="active"
             radioClass: 'iradio_flat-blue'
         });
         $('#org_select').select2();
+        $('#user_dep').select2();
     });
 </script>
 @stop

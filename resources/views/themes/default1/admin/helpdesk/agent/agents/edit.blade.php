@@ -135,13 +135,23 @@ class="active"
                 {!! Form::email('email',null,['class' => 'form-control']) !!}
 
             </div>
-            <div class="col-xs-6 form-group {{ $errors->has('organization') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('organization') ? 'has-error' : '' }}">
                 {!! Form::label('organization',Lang::get('lang.organization')) !!}
                 <select class="form-control" name="org_id[]" id="org_select" multiple="multiple">
                     @foreach($orgs as $org)
                         <option value="{!! $org->id !!}" <?php if (in_array($org->id, $organization_ids)) {
                             echo 'selected=selected';
                         }?> >{!! $org->name !!}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-xs-4 form-group {{ $errors->has('user_dep') ? 'has-error' : '' }}">
+                {!! Form::label('user_dep', Lang::get('lang.user_dep')) !!}
+                <select class="form-control" name="user_dep[]" id="user_dep" multiple="multiple">
+                    @foreach($departments as $dep)
+                        <option value="{!! $dep->id !!}" <?php if (in_array($dep->id, $dep_ids)) {
+                            echo 'selected=selected';
+                        } ?> >{!! $dep->name !!}</option>
                     @endforeach
                 </select>
             </div>
@@ -318,6 +328,7 @@ class="active"
 <script type="text/javascript">
     $(function() {
         $('#org_select').val([<?php echo implode(', ', $organization_ids)?>]).select2();
+        $('#user_dep').val([<?php echo implode(', ', $dep_ids)?>]).select2();
     });
 </script>
 
