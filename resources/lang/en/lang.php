@@ -1644,4 +1644,18 @@ return [
     'ticket-has-x-priority'                        => 'This ticket has :priority priority',
     'clean-forever'                                => 'delete permanently',
     'mail-sent-to-job-for-process'                 => 'Mail has been sent to job for process, it will appear in your mailbox once it gets processed by your selected queue service. If you don\'t recieve the mail check logs for errors or warnings.',
+
+    'visible' => 'Visible',
+    'non_visible' => 'Non visible',
+    'is_visible_for_all_organizations' => 'Visible for all organizations by default',
+    'is_visible_for_all_departments' => 'Visible for all departments by default',
+    'is_visible_for_all_teams' => 'Visible for all teams by default',
+
+    'is_visible_for_orgs' => 'Permitted organizations',
+    'is_visible_for_deps' => 'Permitted departments',
+    'is_visible_for_teams' => 'Permitted teams',
+
+    'is_non_visible_for_orgs' => 'Prohibited organizations',
+    'is_non_visible_for_deps' => 'Prohibited departments',
+    'is_non_visible_for_teams' => 'Prohibited teams',
 ];

@@ -1064,4 +1064,18 @@ return [
      'selected-user-is-already-the-owner' => 'Selected user is already the owner of this ticket.',
      //updated 15-5-2017
      'session-expired'     => 'Session expired or invalid, please try again.',
+
+    'visible' => 'Visible',
+    'non_visible' => 'Non visible',
+    'is_visible_for_all_organizations' => 'Visible for all organizations by default',
+    'is_visible_for_all_departments' => 'Visible for all departments by default',
+    'is_visible_for_all_teams' => 'Visible for all teams by default',
+
+    'is_visible_for_orgs' => 'Permitted organizations',
+    'is_visible_for_deps' => 'Permitted departments',
+    'is_visible_for_teams' => 'Permitted teams',
+
+    'is_non_visible_for_orgs' => 'Prohibited organizations',
+    'is_non_visible_for_deps' => 'Prohibited departments',
+    'is_non_visible_for_teams' => 'Prohibited teams',
 ];

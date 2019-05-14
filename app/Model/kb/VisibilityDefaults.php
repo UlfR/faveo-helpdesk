@@ -66,6 +66,6 @@ class VisibilityDefaults extends Model
         return self::query()
             ->where('entity_id', '=', $entity_id)
             ->where('entity_type', '=', $entity_type)
-            ->pluck('part_type', 'is_visible')->toArray();
+            ->pluck('is_visible', 'part_type')->toArray();
     }
 }

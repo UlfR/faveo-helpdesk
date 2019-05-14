@@ -16,6 +16,7 @@ use App\Model\kb\Category;
 use App\Model\kb\Relationship;
 // Classes
 use App\Model\kb\Visibilities;
+use App\Model\kb\VisibilityDefaults;
 use Datatable;
 use Exception;
 use Lang;
@@ -133,6 +134,10 @@ class CategoryController extends Controller
         $deps = Department::query()->pluck('name', 'id')->toArray();
         $teams = Teams::query()->pluck('name', 'id')->toArray();
 
+        $iv_org = 0;
+        $iv_dep = 0;
+        $iv_team = 0;
+
         $iv_org_ids = [];
         $iv_dep_ids = [];
         $iv_team_ids = [];
@@ -147,7 +152,8 @@ class CategoryController extends Controller
                 compact(
                     'category', 'orgs', 'deps', 'teams',
                    'iv_org_ids', 'iv_dep_ids', 'iv_team_ids',
-                    'nv_org_ids', 'nv_dep_ids', 'nv_team_ids'
+                    'nv_org_ids', 'nv_dep_ids', 'nv_team_ids',
+                    'iv_org', 'iv_dep', 'iv_team'
                 )
             );
         } catch (Exception $e) {
@@ -173,6 +179,12 @@ class CategoryController extends Controller
         try {
             $category->fill($request->input())->save();
             $id = $category->id;
+
+            (new VisibilityDefaults())->setVisibilities('category', $id, [
+                'org' => $request->input('iv_org'),
+                'dep' => $request->input('iv_dep'),
+                'team' => $request->input('iv_team'),
+            ]);
 
             $org_vises = [];
             foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}
@@ -214,6 +226,11 @@ class CategoryController extends Controller
         $deps = Department::query()->pluck('name', 'id')->toArray();
         $teams = Teams::query()->pluck('name', 'id')->toArray();
 
+        $visibility_defaults = (new VisibilityDefaults())->getVisibilities('category', $id);
+        $iv_org = $visibility_defaults['org'] ?? 0;
+        $iv_dep = $visibility_defaults['dep'] ?? 0;
+        $iv_team = $visibility_defaults['team'] ?? 0;
+
         $visibilities = new Visibilities;
         $org_ids = $visibilities->getVisibilities('category', $id, 'org');
         $dep_ids = $visibilities->getVisibilities('category', $id, 'dep');
@@ -233,7 +250,8 @@ class CategoryController extends Controller
                 'category',
                 'categories', 'orgs', 'deps', 'teams',
                 'iv_org_ids', 'iv_dep_ids', 'iv_team_ids',
-                'nv_org_ids', 'nv_dep_ids', 'nv_team_ids'
+                'nv_org_ids', 'nv_dep_ids', 'nv_team_ids',
+                'iv_org', 'iv_dep', 'iv_team'
             )
         );
     }
@@ -260,6 +278,12 @@ class CategoryController extends Controller
         try {
             $category->slug = $slug;
             $category->fill($request->input())->save();
+
+            (new VisibilityDefaults())->setVisibilities('category', $id, [
+                'org' => $request->input('iv_org'),
+                'dep' => $request->input('iv_dep'),
+                'team' => $request->input('iv_team'),
+            ]);
 
             $org_vises = [];
             foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}

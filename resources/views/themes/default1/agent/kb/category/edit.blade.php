@@ -87,6 +87,42 @@ active
             </div>
 
             <div class="col-md-12 form-group">
+                <div class="col-xs-4 form-group {{ $errors->has('iv_org') ? 'has-error' : '' }}">
+                    {!! Form::label('iv_org', Lang::get('lang.is_visible_for_all_organizations')) !!}
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_org', '1', (bool)$iv_org) !!} {{Lang::get('lang.visible')}}
+                        </div>
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_org', '0', !(bool)$iv_org) !!} {{Lang::get('lang.non_visible')}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4 form-group {{ $errors->has('iv_dep') ? 'has-error' : '' }}">
+                    {!! Form::label('iv_dep', Lang::get('lang.is_visible_for_all_departments')) !!}
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_dep', '1', (bool)$iv_dep) !!} {{Lang::get('lang.visible')}}
+                        </div>
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_dep', '0', !(bool)$iv_dep) !!} {{Lang::get('lang.non_visible')}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4 form-group {{ $errors->has('iv_team') ? 'has-error' : '' }}">
+                    {!! Form::label('iv_team', Lang::get('lang.is_visible_for_all_teams')) !!}
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_team', '1', (bool)$iv_team) !!} {{Lang::get('lang.visible')}}
+                        </div>
+                        <div class="col-xs-6">
+                            {!! Form::radio('iv_team', '0', !(bool)$iv_team) !!} {{Lang::get('lang.non_visible')}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 form-group">
                 <div class="col-xs-4 form-group {{ $errors->has('iv_org_ids') ? 'has-error' : '' }}">
                     {!! Form::label('iv_org_ids',Lang::get('lang.is_visible_for_orgs')) !!}
                     {!! Form::select('iv_org_ids[]', $orgs, null, ['class' => 'form-control select2','id' => 'iv_org_ids', 'multiple' => 'multiple']) !!}
