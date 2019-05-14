@@ -134,9 +134,9 @@ class CategoryController extends Controller
         $deps = Department::query()->pluck('name', 'id')->toArray();
         $teams = Teams::query()->pluck('name', 'id')->toArray();
 
-        $iv_org = 0;
-        $iv_dep = 0;
-        $iv_team = 0;
+        $iv_org = -1;
+        $iv_dep = -1;
+        $iv_team = -1;
 
         $iv_org_ids = [];
         $iv_dep_ids = [];
@@ -187,16 +187,16 @@ class CategoryController extends Controller
             ]);
 
             $org_vises = [];
-            foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}
-            foreach ($request->input('nv_org_ids') as $xid) {$org_vises[$xid] = false;}
+            foreach ($request->input('iv_org_ids',[]) as $xid) {$org_vises[$xid] = true;}
+            foreach ($request->input('nv_org_ids',[]) as $xid) {$org_vises[$xid] = false;}
 
             $dep_vises = [];
-            foreach ($request->input('iv_dep_ids') as $xid) {$dep_vises[$xid] = true;}
-            foreach ($request->input('nv_dep_ids') as $xid) {$dep_vises[$xid] = false;}
+            foreach ($request->input('iv_dep_ids',[]) as $xid) {$dep_vises[$xid] = true;}
+            foreach ($request->input('nv_dep_ids',[]) as $xid) {$dep_vises[$xid] = false;}
 
             $team_vises = [];
-            foreach ($request->input('iv_team_ids') as $xid) {$team_vises[$xid] = true;}
-            foreach ($request->input('nv_team_ids') as $xid) {$team_vises[$xid] = false;}
+            foreach ($request->input('iv_team_ids',[]) as $xid) {$team_vises[$xid] = true;}
+            foreach ($request->input('nv_team_ids',[]) as $xid) {$team_vises[$xid] = false;}
 
             $visibilities = new Visibilities;
             $visibilities->setVisibilities('category', $id, 'org', $org_vises);
@@ -227,9 +227,9 @@ class CategoryController extends Controller
         $teams = Teams::query()->pluck('name', 'id')->toArray();
 
         $visibility_defaults = (new VisibilityDefaults())->getVisibilities('category', $id);
-        $iv_org = $visibility_defaults['org'] ?? 0;
-        $iv_dep = $visibility_defaults['dep'] ?? 0;
-        $iv_team = $visibility_defaults['team'] ?? 0;
+        $iv_org = $visibility_defaults['org'] ?? -1;
+        $iv_dep = $visibility_defaults['dep'] ?? -1;
+        $iv_team = $visibility_defaults['team'] ?? -1;
 
         $visibilities = new Visibilities;
         $org_ids = $visibilities->getVisibilities('category', $id, 'org');
@@ -286,16 +286,16 @@ class CategoryController extends Controller
             ]);
 
             $org_vises = [];
-            foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}
-            foreach ($request->input('nv_org_ids') as $xid) {$org_vises[$xid] = false;}
+            foreach ($request->input('iv_org_ids',[]) as $xid) {$org_vises[$xid] = true;}
+            foreach ($request->input('nv_org_ids',[]) as $xid) {$org_vises[$xid] = false;}
 
             $dep_vises = [];
-            foreach ($request->input('iv_dep_ids') as $xid) {$dep_vises[$xid] = true;}
-            foreach ($request->input('nv_dep_ids') as $xid) {$dep_vises[$xid] = false;}
+            foreach ($request->input('iv_dep_ids',[]) as $xid) {$dep_vises[$xid] = true;}
+            foreach ($request->input('nv_dep_ids',[]) as $xid) {$dep_vises[$xid] = false;}
 
             $team_vises = [];
-            foreach ($request->input('iv_team_ids') as $xid) {$team_vises[$xid] = true;}
-            foreach ($request->input('nv_team_ids') as $xid) {$team_vises[$xid] = false;}
+            foreach ($request->input('iv_team_ids',[]) as $xid) {$team_vises[$xid] = true;}
+            foreach ($request->input('nv_team_ids',[]) as $xid) {$team_vises[$xid] = false;}
 
             $visibilities = new Visibilities;
             $visibilities->setVisibilities('category', $id, 'org', $org_vises);

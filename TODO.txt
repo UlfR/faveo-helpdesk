@@ -32,34 +32,30 @@ CREATE TABLE `kb_entity_visibility_defaults` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-categories:
-(G)visibility by org
-(G)visibility by dep
-(G)visibility by team
+categories/articles:
+    hide non permitted for agent
 
-critical:
 tickets:
-(Z)sla by priority
-(Z)subtopic is required
-(Z)telegram
-(Z)sms
+    sla by priority
+    subtopic is required
+    telegram
+    sms
 
 categories:
-(Z)tree in CUI
+    tree in CUI
 
-non critical:
 topics:
-(Z)visibility by org
-(Z)visibility by dep
-(Z)visibility by team
+    visibility by org
+    visibility by dep
+    visibility by team
 
 articles:
-(Z)visibility by org
-(Z)visibility by dep
-(Z)visibility by team
+    visibility by org
+    visibility by dep
+    visibility by team
 
 misc:
-cleanup main page
-translate
-remove deps, orgs and teams with user remove
-agent remove
+    cleanup main page
+    translate
+    remove deps, orgs and teams with user remove
+    agent remove

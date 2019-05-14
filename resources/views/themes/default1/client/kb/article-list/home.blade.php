@@ -32,6 +32,7 @@ class = "active"
         ?>
         @foreach($categorys as $category)
         {{-- get the article_id where category_id == current category --}}
+        <?php if (!$category->isVisibleForUser(Auth::user())) continue; ?>
         <?php
         $all = App\Model\kb\Relationship::all();
         /* from whole attribute pick the article_id */
@@ -69,6 +70,7 @@ class = "active"
                         $article = $article->orderBy('publish_time','desc')->get();
                         ?>
                         @forelse($article as $arti)
+                        <?php if (!$arti->isVisibleForUser(Auth::user())) continue; ?>
                         <li>
                             <i class="fa-li fa fa-list-alt fa-fw text-muted"></i>
                             <h3 class="h5"><a href="#"><a href="{{url('show/'.$arti->slug)}}">{{$arti->name}}</a></h3>
@@ -108,6 +110,8 @@ class = "active"
 <ul class="nav nav-pills nav-stacked nav-categories">
     @foreach($categorys as $category)
     <?php
+    if ($category->parent != 0) continue;
+    if (!$category->isVisibleForUser(Auth::user())) continue;
     $num = \App\Model\kb\Relationship::where('category_id', '=', $category->id)->get();
     $article_id = $num->pluck('article_id');
     $numcount = count($article_id);

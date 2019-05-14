@@ -11,6 +11,7 @@
 @section('content')
 <div id="content" class="site-content col-md-9 archive-list archive-article">
     @foreach($article as $arti)
+        <?php if (!$arti->isVisibleForUser(Auth::user())) continue; ?>
             <article class="hentry">
                 <header class="entry-header">
                     <i class="fa fa-list-alt fa-2x fa-fw pull-left text-muted"></i>
@@ -43,6 +44,7 @@
 
     @foreach($categorys as $category)
 <?php
+if (!$category->isVisibleForUser(Auth::user())) continue;
 $num = \App\Model\kb\Relationship::where('category_id','=', $category->id)->get();
 $article_id = $num->pluck('article_id');
 $numcount = count($article_id);

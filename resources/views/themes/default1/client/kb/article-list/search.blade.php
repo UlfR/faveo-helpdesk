@@ -10,7 +10,12 @@
 @stop
 @section('content')
 <div id="content" class="site-content col-md-9">
+    <?php $cnt = 0; ?>
     @forelse($result as $arti)
+        <?php
+            if (!$arti->isVisibleForUser(Auth::user())) continue;
+            ++$cnt;
+        ?>
     <article class="format-standard type-post hentry clearfix">
 
         <header class="clearfix">
@@ -31,11 +36,10 @@
                 <span class="date"><i class="fa fa-clock-o fa-fw"></i> {{$arti->created_at->format('l, d-m-Y')}}</span>
             </div><!-- end of post meta -->
         <hr>
-        @empty 
-        <p><h3><b>Sorry!</b></h3> No result has found.</p>
-        @endforelse
-
     </article>
+        @empty
+        @endforelse
+        <?php if ($cnt == 0) {echo '<p><h3><b>Sorry!</b></h3> No result has found.</p>';} ?>
     <!-- end of page content -->
     <div class="pagination">
         <?php echo $result->render(); ?>
@@ -52,6 +56,7 @@
 
     @foreach($categorys as $category)
 <?php
+if (!$category->isVisibleForUser(Auth::user())) continue;
 $num = \App\Model\kb\Relationship::where('category_id','=', $category->id)->get();
 $article_id = $num->pluck('article_id');
 $numcount = count($article_id);

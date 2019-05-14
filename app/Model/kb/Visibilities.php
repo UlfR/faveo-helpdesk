@@ -1,5 +1,6 @@
 <?php
 namespace App\Model\kb;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Visibilities extends Model
@@ -21,13 +22,35 @@ class Visibilities extends Model
 
     public function isVisibleForParts($entity_type, $entity_id, $part_type, $parts)
     {
-        $isVisibleDefault = (new VisibilityDefaults)->isVisibleForPart($entity_id, $entity_type, $part_type);
+        $isVisibleDefault = (new VisibilityDefaults)->isVisibleForPart($entity_type, $entity_id, $part_type);
+
+        if ($isVisibleDefault === null) {
+            if ($entity_type == 'article') {
+                $r = Relationship::query()->where('article_id', '=', $entity_id)->first();
+                $parent_id = $r ? $r->category_id : 0;
+                $isVisibleDefault = $parent_id > 0 ? $this->isVisibleForParts(
+                    'category', $parent_id, $part_type, $parts
+                ) : null;
+            }
+
+            if ($entity_type == 'category') {
+                $r = Category::query()->find($entity_id);
+                /** @noinspection PhpUndefinedFieldInspection */
+                $parent_id = $r ? $r->parent : 0;
+                $isVisibleDefault = $parent_id > 0 ? $this->isVisibleForParts(
+                    'category', $parent_id, $part_type, $parts
+                ) : null;
+            }
+        }
+
+
         $vr = self::query()
             ->where('entity_id', '=', $entity_id)
             ->where('entity_type', '=', $entity_type)
             ->where('part_type', '=', $part_type)
             ->whereIn('part_id', $parts);
-        return ($isVisibleDefault + $vr->where('is_visible', '=', !$isVisibleDefault)->exists() <= 1);
+        $isNegRowsPresent = $vr->where('is_visible', '=', (int)!$isVisibleDefault)->exists();
+        return ($isVisibleDefault + $isNegRowsPresent == 1);
     }
 
     public function isVisible($entity_type, $entity_id, $orgs, $deps, $teams)
@@ -37,6 +60,20 @@ class Visibilities extends Model
         $isVisibleT = $this->isVisibleForParts($entity_type, $entity_id, 'team', $teams);
 
         return $isVisibleO && $isVisibleD && $isVisibleT;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function isVisibleForUser($entity_type, $entity_id, $user) {
+        if ($user->role == 'admin') {return true;}
+        return $this->isVisible($entity_type, $entity_id, $user->orgIDs(), $user->depIDs(), $user->teamIDs());
+    }
+
+    public function isVisibleForUserID($entity_type, $entity_id, $user_id) {
+        $user = User::query()->find($user_id);
+        return !empty($user) ? $this->isVisibleForUser($entity_type, $entity_id, $user->first()) : false;
     }
 
     public function setVisibility($entity_type, $entity_id, $part_type, $part_id, $is_visible)

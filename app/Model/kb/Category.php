@@ -5,6 +5,7 @@ use App\User;
 
 /**
  * @property mixed id
+ * @property mixed parent
  */
 class Category extends BaseModel
 {
@@ -28,6 +29,7 @@ class Category extends BaseModel
      */
     public function isVisibleForUser($user)
     {
+        if ($user->role == 'admin') {return true;}
         return $this->isVisible($user->orgIDs(), $user->depIDs(), $user->teamIDs());
     }
 }

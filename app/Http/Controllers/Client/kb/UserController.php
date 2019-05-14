@@ -124,7 +124,7 @@ class UserController extends Controller
 
         $arti = $arti->first();
 
-        if ($arti) {
+        if ($arti && $arti->isVisibleForUser(Auth::user())) {
             return view('themes.default1.client.kb.article-list.show', compact('arti'));
         } else {
             return redirect('404');
