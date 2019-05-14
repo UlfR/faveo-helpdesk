@@ -9,6 +9,29 @@ CREATE TABLE `user_assign_department` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+DROP TABLE IF EXISTS `kb_entity_visibility`;
+CREATE TABLE `kb_entity_visibility` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `entity_id` int(10) UNSIGNED DEFAULT NULL,
+  `entity_type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `part_id` int(10) UNSIGNED DEFAULT NULL,
+  `part_type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `is_visible` tinyint(1) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `kb_entity_visibility_defaults`;
+CREATE TABLE `kb_entity_visibility_defaults` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `entity_id` int(10) UNSIGNED DEFAULT NULL,
+  `entity_type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `part_type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `is_visible` tinyint(1) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 categories:
 (G)visibility by org
 (G)visibility by dep

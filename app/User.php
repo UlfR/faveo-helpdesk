@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Model\helpdesk\Agent\Assign_team_agent;
+use App\Model\helpdesk\Agent_panel\User_dep;
+use App\Model\helpdesk\Agent_panel\User_org;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -9,6 +12,9 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Model;
 use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
 
+/**
+ * @property mixed id
+ */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthenticatableUserContract
 {
     use Authenticatable,
@@ -194,5 +200,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function orgIDs() {
+        return User_org::query()->where('user_id', '=', $this->id)->pluck('org_id')->toArray();
+    }
+
+    public function depIDs() {
+        return User_dep::query()->where('user_id', '=', $this->id)->pluck('dep_id')->toArray();
+    }
+
+    public function teamIDs() {
+        return Assign_team_agent::query()->where('agent_id', '=', $this->id)->pluck('team_id')->toArray();
     }
 }

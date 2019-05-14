@@ -9,9 +9,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\kb\CategoryRequest;
 use App\Http\Requests\kb\CategoryUpdate;
 // Model
+use App\Model\helpdesk\Agent\Department;
+use App\Model\helpdesk\Agent\Teams;
+use App\Model\helpdesk\Agent_panel\Organization;
 use App\Model\kb\Category;
 use App\Model\kb\Relationship;
 // Classes
+use App\Model\kb\Visibilities;
 use Datatable;
 use Exception;
 use Lang;
@@ -124,8 +128,28 @@ class CategoryController extends Controller
         $category = $category->pluck('name', 'id')->toArray();
         /* get the view page to create new category with all attributes
           of category model */
+
+        $orgs = Organization::query()->pluck('name', 'id')->toArray();
+        $deps = Department::query()->pluck('name', 'id')->toArray();
+        $teams = Teams::query()->pluck('name', 'id')->toArray();
+
+        $iv_org_ids = [];
+        $iv_dep_ids = [];
+        $iv_team_ids = [];
+
+        $nv_org_ids = [];
+        $nv_dep_ids = [];
+        $nv_team_ids = [];
+
         try {
-            return view('themes.default1.agent.kb.category.create', compact('category'));
+            return view(
+                'themes.default1.agent.kb.category.create',
+                compact(
+                    'category', 'orgs', 'deps', 'teams',
+                   'iv_org_ids', 'iv_dep_ids', 'iv_team_ids',
+                    'nv_org_ids', 'nv_dep_ids', 'nv_team_ids'
+                )
+            );
         } catch (Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
         }
@@ -148,6 +172,24 @@ class CategoryController extends Controller
         // send success message to index page
         try {
             $category->fill($request->input())->save();
+            $id = $category->id;
+
+            $org_vises = [];
+            foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}
+            foreach ($request->input('nv_org_ids') as $xid) {$org_vises[$xid] = false;}
+
+            $dep_vises = [];
+            foreach ($request->input('iv_dep_ids') as $xid) {$dep_vises[$xid] = true;}
+            foreach ($request->input('nv_dep_ids') as $xid) {$dep_vises[$xid] = false;}
+
+            $team_vises = [];
+            foreach ($request->input('iv_team_ids') as $xid) {$team_vises[$xid] = true;}
+            foreach ($request->input('nv_team_ids') as $xid) {$team_vises[$xid] = false;}
+
+            $visibilities = new Visibilities;
+            $visibilities->setVisibilities('category', $id, 'org', $org_vises);
+            $visibilities->setVisibilities('category', $id, 'dep', $dep_vises);
+            $visibilities->setVisibilities('category', $id, 'team', $team_vises);
 
             return Redirect::back()->with('success', Lang::get('lang.category_inserted_successfully'));
         } catch (Exception $e) {
@@ -165,11 +207,35 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        /* get the atributes of the category model whose id == $id */
-        $category = Category::whereId($id)->first();
-        $categories = Category::pluck('name', 'id')->toArray();
-        /* get the Edit page the selected category via id */
-        return view('themes.default1.agent.kb.category.edit', compact('category', 'categories'));
+        $category = Category::query()->find($id);
+        $categories = Category::query()->pluck('name', 'id')->toArray();
+
+        $orgs = Organization::query()->pluck('name', 'id')->toArray();
+        $deps = Department::query()->pluck('name', 'id')->toArray();
+        $teams = Teams::query()->pluck('name', 'id')->toArray();
+
+        $visibilities = new Visibilities;
+        $org_ids = $visibilities->getVisibilities('category', $id, 'org');
+        $dep_ids = $visibilities->getVisibilities('category', $id, 'dep');
+        $team_ids = $visibilities->getVisibilities('category', $id, 'team');
+
+        $iv_org_ids = array_keys(array_filter($org_ids, function($v){return ($v == true);}));
+        $iv_dep_ids = array_keys(array_filter($dep_ids, function($v){return ($v == true);}));
+        $iv_team_ids = array_keys(array_filter($team_ids, function($v){return ($v == true);}));
+
+        $nv_org_ids = array_keys(array_filter($org_ids, function($v){return ($v == false);}));
+        $nv_dep_ids = array_keys(array_filter($dep_ids, function($v){return ($v == false);}));
+        $nv_team_ids = array_keys(array_filter($team_ids, function($v){return ($v == false);}));
+
+        return view(
+            'themes.default1.agent.kb.category.edit',
+            compact(
+                'category',
+                'categories', 'orgs', 'deps', 'teams',
+                'iv_org_ids', 'iv_dep_ids', 'iv_team_ids',
+                'nv_org_ids', 'nv_dep_ids', 'nv_team_ids'
+            )
+        );
     }
 
     /**
@@ -190,9 +256,27 @@ class CategoryController extends Controller
         $slug = str_slug($sl, '-');
         /* update the values at the table via model according with the request */
         //redirct to index page with success message
+        //    public function setVisibilities($entity_type, $entity_id, $part_type, $parts_info)
         try {
             $category->slug = $slug;
             $category->fill($request->input())->save();
+
+            $org_vises = [];
+            foreach ($request->input('iv_org_ids') as $xid) {$org_vises[$xid] = true;}
+            foreach ($request->input('nv_org_ids') as $xid) {$org_vises[$xid] = false;}
+
+            $dep_vises = [];
+            foreach ($request->input('iv_dep_ids') as $xid) {$dep_vises[$xid] = true;}
+            foreach ($request->input('nv_dep_ids') as $xid) {$dep_vises[$xid] = false;}
+
+            $team_vises = [];
+            foreach ($request->input('iv_team_ids') as $xid) {$team_vises[$xid] = true;}
+            foreach ($request->input('nv_team_ids') as $xid) {$team_vises[$xid] = false;}
+
+            $visibilities = new Visibilities;
+            $visibilities->setVisibilities('category', $id, 'org', $org_vises);
+            $visibilities->setVisibilities('category', $id, 'dep', $dep_vises);
+            $visibilities->setVisibilities('category', $id, 'team', $team_vises);
 
             return redirect('category')->with('success', Lang::get('lang.category_updated_successfully'));
         } catch (Exception $e) {
