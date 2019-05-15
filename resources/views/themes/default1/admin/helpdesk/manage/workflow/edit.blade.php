@@ -170,6 +170,11 @@ class="active"
                                                 <td>
                                                     <select class="form-control" name="rule[{!! $j-1 !!}][a]" required>
                                                         <option value="">-- {!! Lang::get('lang.select_one') !!} --</option>
+                                                        <option value="priority" <?php
+                                                        if ($workflow_rule->matching_scenario == 'priority') {
+                                                            echo "selected='selected'";
+                                                        }
+                                                        ?> >{!! Lang::get('lang.email') !!}</option>
                                                         <option value="email" <?php
                                                         if ($workflow_rule->matching_scenario == 'email') {
                                                             echo "selected='selected'";
