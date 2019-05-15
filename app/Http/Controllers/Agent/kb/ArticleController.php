@@ -14,6 +14,7 @@ use App\Model\kb\Comment;
 use App\Model\kb\Relationship;
 use App\Model\kb\Settings;
 // Classes
+use App\Model\kb\Visibilities;
 use Auth;
 use Chumper\Datatable\Table;
 use Datatable;
@@ -67,6 +68,11 @@ class ArticleController extends Controller
                 ->select('id', 'name', 'description', 'publish_time', 'slug')
                 ->orderBy('publish_time', 'desc')
                 ->get();
+        if (Auth::user()->role != 'admin') {
+            $articles = $articles->reject(function ($a) {
+                return !(new Visibilities())->isVisibleForUser('article', $a->id, Auth::user());
+            });
+        }
         // returns chumper datatable
         return Datatable::Collection($articles)
 
@@ -134,7 +140,7 @@ class ArticleController extends Controller
     public function create(Category $category)
     {
         /* get the attributes of the category */
-        $category = $category->pluck('id', 'name');
+        $category = $category->all();
         /* get the create page  */
         try {
             return view('themes.default1.agent.kb.article.create', compact('category'));
@@ -198,7 +204,7 @@ class ArticleController extends Controller
         /* define the selected fields */
         $assign = $relation->where('article_id', $id)->pluck('category_id');
         /* get the attributes of the category */
-        $category = $category->pluck('id', 'name');
+        $category = $category->all();
         /* get the selected article and display it at edit page  */
         /* Get the selected article with id */
         $article = $article->whereId($id)->first();

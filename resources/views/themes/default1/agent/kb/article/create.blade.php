@@ -189,14 +189,19 @@ class="active"
                                     <div class="form-group {{ $errors->has('category_id') ? 'has-error' : '' }}">
                                         {{-- {!! Form::label('category_id','Category') !!} --}}
 
-                                        @foreach($category->toArray() as $key=>$val)
+                                        @foreach($category as $cat)
+                                            <?php
+                                                if (!$cat->isVisibleForUser(Auth::user())) continue;
+                                                $parent = \App\Model\kb\Category::query()->find($cat->parent);
+                                            ?>
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-md-1">
-                                                    <input type="radio" name="category_id[]" value="<?php echo $val; ?>">
+                                                    <input type="radio" name="category_id[]" value="{{$cat->id}}">
                                                 </div>
                                                 <div class="col-md-10">
-                                                    <?php echo $key; ?>
+                                                    {{$parent ? $parent->name . ' : ' : ''}}
+                                                    {{$cat->name}}
                                                 </div>
                                             </div>
                                         </div>

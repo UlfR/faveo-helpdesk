@@ -33,9 +33,9 @@ CREATE TABLE `kb_entity_visibility_defaults` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 tickets:
-    subtopic is required
     telegram
     sms
+    subtopic is required
 
 topics:
     visibility by org
