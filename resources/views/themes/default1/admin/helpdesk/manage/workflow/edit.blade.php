@@ -174,7 +174,7 @@ class="active"
                                                         if ($workflow_rule->matching_scenario == 'priority') {
                                                             echo "selected='selected'";
                                                         }
-                                                        ?> >{!! Lang::get('lang.email') !!}</option>
+                                                        ?> >{!! Lang::get('lang.priority') !!}</option>
                                                         <option value="email" <?php
                                                         if ($workflow_rule->matching_scenario == 'email') {
                                                             echo "selected='selected'";
