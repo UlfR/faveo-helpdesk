@@ -1,6 +1,12 @@
 @extends('themes.default1.client.layout.client')
 
-<?php $category = App\Model\kb\Category::where('id', '=', $id)->first(); ?>
+<?php
+use App\Model\kb\Relationship;
+$category = App\Model\kb\Category::query()->find($id);
+$parent_id = $category->parent;
+$parent = App\Model\kb\Category::query()->find($parent_id);
+$children = $categorys->where('parent', '=', $category->id);
+?>
 @section('title')
 {!! $category->name !!} -
 @stop
@@ -12,11 +18,30 @@ class = "active"
 @section('content')
 <div id="content" class="site-content col-md-9">
     <header class="archive-header">
-        <h1 >{!! $category->name !!}</h1>
+        <?php if ($parent) { ?>
+        <h2 style="display: inline-block"><a href="{{url('category-list/'.$parent->slug)}}" class="">{{$parent->name}}</a></h2>
+        <?php } ?>
+        <h3 style="display: inline-block"> &bull; {!! $category->name !!}</h3>
     </header><!-- .archive-header -->
     <blockquote class="archive-description" style="display: none;">
         <p>{!! $category->description !!}</p>
     </blockquote>
+    <ul class="articles">
+        <hr>
+        @forelse($children as $c_cat)
+            <?php
+            if (!$c_cat->isVisibleForUser(Auth::user())) continue;
+            $count = App\Model\kb\Relationship::where('category_id', '=', $c_cat->id)->count();
+            ?>
+            <li class="article-entry image" style="margin-left: 50px;">
+                <h4>
+                    <a href="{{url('category-list/'.$c_cat->slug)}}" class="">{{$c_cat->name}}({{$count}})</a>
+                </h4>
+            </li>
+        @empty
+        @endforelse
+    </ul>
+
     <div class="archive-list archive-article">
         <?php foreach ($article_id as $id) { ?>
             <?php
@@ -49,7 +74,6 @@ class = "active"
                 </footer><!-- .entry-footer -->
             </article><!-- .hentry -->
             @empty
-            <p>No articles available</p>
             @endforelse
             <?php
         }
@@ -79,10 +103,9 @@ class = "active"
 <ul class="nav nav-pills nav-stacked nav-categories">
     @foreach($categorys as $category)
     <?php
+    if ($category->parent != $parent_id) continue;
     if (!$category->isVisibleForUser(Auth::user())) continue;
-    $num = \App\Model\kb\Relationship::where('category_id', '=', $category->id)->get();
-    $article_id = $num->pluck('article_id');
-    $numcount = count($article_id);
+    $numcount = Relationship::where('category_id','=', $category->id)->count();
     ?>
     <li><a href="{{url('category-list/'.$category->slug)}}"><span class="badge pull-right">{{$numcount}}</span>{{$category->name}}</a></li>
     @endforeach

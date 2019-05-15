@@ -18,46 +18,35 @@ class = "active"
     </div>
     <div class="row separator">
         @foreach($categorys as $category)
-        <?php if (!$category->isVisibleForUser(Auth::user())) continue; ?>
+        <?php
+            if ($category->parent > 0) continue;
+            if (!$category->isVisibleForUser(Auth::user())) continue;
+            $count = App\Model\kb\Relationship::where('category_id', '=', $category->id)->count();
+            $children = $categorys->where('parent', '=', $category->id);
+        ?>
         <div class="col-xs-6">
-            {{-- get the article_id where category_id == current category --}}
-            <?php
-            $all = App\Model\kb\Relationship::where('category_id', $category->id)->get();
-            /* from whole attribute pick the article_id */
-            $article_id = $all->pluck('article_id');
-            ?>
             <section class="articles-list">
                 <h3>
                     <i class="fa fa-folder-open-o fa-fw text-muted"></i>
                     <a href="{{url('category-list/'.$category->slug)}}">{{$category->name}}</a>
-                    <span>({{count($all)}})</span>
+                    <span>({{$count}})</span>
                 </h3>
                 <div>{!! $category->description !!}</div>
                 <ul class="articles">
                     <hr>
-                    <?php foreach ($article_id as $id) {
-                        $article = App\Model\kb\Article::where('id', $id);
-                        if (!Auth::user() || Auth::user()->role == 'user') {
-                            $article = $article->where('status', 1);
-                            $article = $article->where('type', 1);
-                        }
-                        $article = $article->orderBy('publish_time', 'desc');
-                        $article = $article->get();
-                        //dd($article);
+                    @forelse($children as $c_cat)
+                        <?php
+                        if (!$c_cat->isVisibleForUser(Auth::user())) continue;
+                        $count = App\Model\kb\Relationship::where('category_id', '=', $c_cat->id)->count();
                         ?>
-                        @forelse($article as $arti)
-                            <?php if (!$arti->isVisibleForUser(Auth::user())) continue; ?>
                         <li class="article-entry image" style="margin-left: 50px;">
-                            <h4><a href="{{url('show/'.$arti->slug)}}">{{$arti->name}}</a></h4>
-                            <span class="article-meta">{{$arti->created_at->format('l, d-m-Y')}}
-                                <?php $str = $arti->description ?>
-                                <?php $excerpt = App\Http\Controllers\Client\kb\UserController::getExcerpt($str, $startPos = 0, $maxLength = 55) ?>
-                                <p>{!!$excerpt!!} <a class="readmore-link" href="{{url('show/'.$arti->slug)}}">{!! Lang::get('lang.read_more') !!}</a></p>
+                            <h4>
+                                <a href="{{url('category-list/'.$c_cat->slug)}}" class="">{{$c_cat->name}}({{$count}})</a>
+                            </h4>
                         </li>
-                        @empty 
-                        <li>No articles available</li>
+                        @empty
+                        <li>{!! Lang::get('lang.no_subcategories') !!}</li>
                         @endforelse
-                    <?php } ?>
                 </ul>
             </section>
         </div>

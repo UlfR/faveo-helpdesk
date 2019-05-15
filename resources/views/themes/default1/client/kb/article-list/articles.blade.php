@@ -1,3 +1,6 @@
+<?php
+use App\Model\kb\Relationship;
+?>
 @extends('themes.default1.client.layout.client')
 
 @section('title')
@@ -44,10 +47,9 @@
 
     @foreach($categorys as $category)
 <?php
+if ($category->parent != 0) continue;
 if (!$category->isVisibleForUser(Auth::user())) continue;
-$num = \App\Model\kb\Relationship::where('category_id','=', $category->id)->get();
-$article_id = $num->pluck('article_id');
-$numcount = count($article_id);
+$numcount = Relationship::where('category_id','=', $category->id)->count();
 ?>
     <li><a href="{{url('category-list/'.$category->slug)}}"><span class="badge pull-right">{{$numcount}}</span>{{$category->name}}</a></li>
     @endforeach

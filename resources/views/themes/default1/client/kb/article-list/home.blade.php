@@ -28,67 +28,37 @@ class = "active"
 
 <div id="content" class="site-content col-md-9">
     <div class="row">
-        <?php $categories = App\Model\kb\Category::all();
-        ?>
         @foreach($categorys as $category)
         {{-- get the article_id where category_id == current category --}}
-        <?php if (!$category->isVisibleForUser(Auth::user())) continue; ?>
         <?php
-        $all = App\Model\kb\Relationship::all();
-        /* from whole attribute pick the article_id */
-        $page = App\Model\kb\Relationship::where('category_id', '=', $category->id)->paginate('3');
-        /* from whole attribute pick the article_id */
-        $article_id = $page->pluck('article_id');
-        $count = count($article_id);
+            if ($category->parent > 0) continue;
+            if (!$category->isVisibleForUser(Auth::user())) continue;
+            $count = App\Model\kb\Relationship::where('category_id', '=', $category->id)->count();
+            $children = $categorys->where('parent', '=', $category->id);
         ?>
         <div class="col-md-6">
             <section class="box-categories">
                 <h1 class="section-title h4 clearfix">
                     <i class="fa fa-folder-open-o fa-fw text-muted"></i>
                     <small class="pull-right"><i class="fa fa-hdd-o fa-fw"></i></small>
-                    {{$category->name}}
+                    <a href="{{url('category-list/'.$category->slug)}}" class="">{{$category->name}}({{$count}})</a>
                 </h1>
                 <ul class="fa-ul">
-                    <?php
-                    foreach ($article_id as $id) {
-                        //$format = App\Model\helpdesk\Settings\System::where('id','1')->first()->date_time_format;
-                        $tz = App\Model\helpdesk\Settings\System::where('id', '1')->first()->time_zone;
-                        $tz = \App\Model\helpdesk\Utility\Timezones::where('id', $tz)->first()->name;
-                        date_default_timezone_set($tz);
-                        $date = \Carbon\Carbon::now()->toDateTimeString();
-                        //dd($date);
-
-                        $article = App\Model\kb\Article::where('id', '=', $id);
-                        if (Auth::check()) {
-                            if (\Auth::user()->role == 'user') {
-                                $article = $article->where('status', '1');
-                            }
-                        } else {
-                            $article = $article->where('status', '1');
-                        }
-                        $article = $article->where('type', '1');
-                        $article = $article->orderBy('publish_time','desc')->get();
+                    @forelse($children as $c_cat)
+                        <?php
+                            if (!$c_cat->isVisibleForUser(Auth::user())) continue;
+                            $count = App\Model\kb\Relationship::where('category_id', '=', $c_cat->id)->count();
                         ?>
-                        @forelse($article as $arti)
-                        <?php if (!$arti->isVisibleForUser(Auth::user())) continue; ?>
                         <li>
                             <i class="fa-li fa fa-list-alt fa-fw text-muted"></i>
-                            <h3 class="h5"><a href="#"><a href="{{url('show/'.$arti->slug)}}">{{$arti->name}}</a></h3>
-                            <span class="article-meta">{{$arti->created_at->format('l, d-m-Y')}}</span>
-                            <?php
-                            $str = $arti->description;
-                            $len = strlen($str);
-
-                            $excerpt = App\Http\Controllers\Client\kb\UserController::getExcerpt($str, $startPos = 0, $maxLength = 20);
-                            ?>
-                            {!! strip_tags($excerpt) !!} <br/><a class="more-link text-center" href="{{url('show/'.$arti->slug)}}" style="color: orange">{!! Lang::get('lang.read_more') !!}</a>
+                            <h3 class="h5">
+                                <a href="{{url('category-list/'.$c_cat->slug)}}" class="">{{$c_cat->name}}({{$count}})</a>
+                            </h3>
                         </li>
-                        @empty
-                        <p>{!! Lang::get('lang.no_article') !!}</p>
-                        @endforelse
-                    <?php } ?>
+                    @empty
+                        <p>{!! Lang::get('lang.no_subcategories') !!}</p>
+                    @endforelse
                 </ul>
-                <p class="more-link text-center"><a href="{{url('category-list/'.$category->slug)}}" class="btn btn-custom btn-xs">{!! Lang::get('lang.view_all') !!}</a></p>
             </section>
         </div>
         @endforeach

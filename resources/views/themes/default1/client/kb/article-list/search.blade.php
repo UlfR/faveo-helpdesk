@@ -56,6 +56,7 @@
 
     @foreach($categorys as $category)
 <?php
+if ($category->parent != 0) continue;
 if (!$category->isVisibleForUser(Auth::user())) continue;
 $num = \App\Model\kb\Relationship::where('category_id','=', $category->id)->get();
 $article_id = $num->pluck('article_id');

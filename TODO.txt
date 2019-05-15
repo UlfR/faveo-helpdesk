@@ -32,17 +32,10 @@ CREATE TABLE `kb_entity_visibility_defaults` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-categories/articles:
-    hide non permitted for agent
-
 tickets:
-    sla by priority
     subtopic is required
     telegram
     sms
-
-categories:
-    tree in CUI
 
 topics:
     visibility by org
