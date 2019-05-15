@@ -990,7 +990,19 @@ class TicketController extends Controller
         $ticket->dept_id = $dept;
         $ticket->type_id = $type_id;
         $ticket->help_topic_id = $helptopic;
-        $ticket->sla = $sla;
+
+        $sla_by_priority = DB::table('workflow_name')
+            ->join('workflow_action', 'workflow_name.id', '=', 'workflow_action.workflow_id')
+            ->join('workflow_rules', 'workflow_name.id', '=', 'workflow_rules.workflow_id')
+            ->where('workflow_name.status', '=', 1)
+            ->where('matching_scenario', '=', 'priority')
+            ->where('matching_relation', '=', 'equal')
+            ->where('condition', '=', 'sla')
+            ->where('matching_value', '=', $priority)
+            ->pluck('action')->first();
+        $sla_plan = Sla_plan::query()->find($sla_by_priority ?: $sla);
+
+        $ticket->sla = $sla_plan->id;
         $ticket->assigned_to = $assignto;
 
         $ticket->priority_id = $priority;
@@ -1022,7 +1034,6 @@ class TicketController extends Controller
         }
         $ticket->save();
 
-        $sla_plan = Sla_plan::where('id', '=', $sla)->first();
         $ovdate = $ticket->created_at;
         $new_date = date_add($ovdate, date_interval_create_from_date_string($sla_plan->grace_period));
         $ticket->duedate = $new_date;
