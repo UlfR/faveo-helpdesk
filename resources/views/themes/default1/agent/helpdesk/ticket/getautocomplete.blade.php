@@ -1,7 +1,7 @@
 <?php
 
 $term = $_GET["term"];
-$users = app\User::where('email', 'LIKE', '%' . $term . '%')->where('active', '=', 1)->where('role', '=', 'user')->get();
+$users = app\User::where('email', 'LIKE', '%' . $term . '%')->where('active', '=', 1)->get();
 $json = array();
 
 foreach ($users as $user) {
