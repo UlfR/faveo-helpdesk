@@ -17,6 +17,7 @@ use App\Model\helpdesk\Manage\Help_topic;
  * @property mixed thread
  * @property mixed user
  * @property mixed helptopic
+ * @property mixed ticket_number
  */
 class Tickets extends BaseModel
 {
@@ -186,15 +187,23 @@ ZZZ;
     public function sendToTelegram($current_user, $type, $message=null)
     {
         $ticket_link = route('ticket.thread', [$this->id]);
-        $head        = "#{$this->id}({$ticket_link})";
+        $head        = "#{$this->ticket_number}({$ticket_link})";
         $message     = $message ?: $this->getMessageInfo();
-        $text        = "Ticket message\n$head:{$message}";
         $agent       = $this->getAssignedTo();
         $chat_ids    = $agent ? [$agent->telegram] : $this->getTelegram();
+        $msg_type    = 'message';
 
         if ($agent && $agent->id == $current_user->id) return $this;
-        if ($type == 'create') $text = "Ticket created\n$head:{$message}";
-        if ($type == 'update') $text = "Ticket updated\n$head:{$message}";
+        if ($type == 'create') $msg_type = 'created';
+        if ($type == 'update') $msg_type = 'updated';
+
+        $text        = <<<ZZZ
+Ticket {$msg_type}
+{$head}‎
+#####
+{$message}
+#####
+ZZZ;
 
         try {
             Log::info('sendToTelegram: ' . $text . ' to ' . implode(', ', $chat_ids));
