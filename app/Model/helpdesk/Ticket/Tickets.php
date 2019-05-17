@@ -3,6 +3,7 @@
 namespace App\Model\helpdesk\Ticket;
 
 use App\BaseModel;
+use App\Model\helpdesk\Agent\Teams;
 use App\Model\helpdesk\Manage\Sla_plan;
 use App\Model\helpdesk\Utility\Priority;
 use Exception;
@@ -28,6 +29,7 @@ use App\Model\helpdesk\Manage\Help_topic;
  * @property type help_topic_id
  * @property type user_id
  * @property type dept_id
+ * @property mixed team_id
  */
 class Tickets extends BaseModel
 {
@@ -129,6 +131,11 @@ class Tickets extends BaseModel
         return $this->belongsTo(Sla_plan::class, 'sla')->first();
     }
 
+    public function supportLevel()
+    {
+        return $this->belongsTo(Teams::class, 'team_id');
+    }
+
     public function type()
     {
         return self::TYPES[$this->attributes['type_id']];
@@ -136,17 +143,12 @@ class Tickets extends BaseModel
 
     public function getTelegram()
     {
-        $chat_ids = [];
-        $team_ids = $this->user ? $this->user->teamIDs() : [];
-
-        if (in_array(1, $team_ids)) $chat_ids[] = '-322027375'; //1level
-        if (in_array(4, $team_ids)) $chat_ids[] = '-390912367'; //2level
-        if (count($chat_ids) == 0) {
-            $chat_ids[] = '-322027375'; //1level
-            //$chat_ids[]= '265102183'; //admin
-        }
-
-        return $chat_ids;
+        $chat_ids = [
+            0 => '265102183', //admin
+            1 => '-322027375', //1level
+            4 => '-390912367', //2level
+        ];
+        return [$chat_ids[+$this->team_id]];
     }
 
     public function getMessageInfo()
@@ -200,7 +202,7 @@ ZZZ;
         $head        = "#{$this->ticket_number}({$ticket_link})";
         $message     = $message ?: $this->getMessageInfo();
         $agent       = $this->getAssignedTo();
-        $chat_ids    = $agent ? [$agent->telegram] : $this->getTelegram();
+        $chat_ids    = ($agent && !empty($agent->telegram)) ? [$agent->telegram] : $this->getTelegram();
         $msg_type    = 'message';
 
         if ($agent && $agent->id == $current_user->id) return $this;
@@ -215,12 +217,12 @@ Ticket {$msg_type}
 #####
 ZZZ;
 
-        try {
             Log::info('sendToTelegram: ' . $text . ' to ' . implode(', ', $chat_ids));
-            foreach ($chat_ids as $chat_id) \Telegram::sendMessage(['chat_id' => $chat_id, 'text' => $text]);
-        } catch (Exception $e) {
-            Log::info('sendToTelegram failed: ' . $e->getMessage());
-        }
+            foreach ($chat_ids as $chat_id) try {
+                \Telegram::sendMessage(['chat_id' => $chat_id, 'text' => $text]);
+            } catch (Exception $e) {
+                Log::info('sendToTelegram failed: ' . $e->getMessage());
+            }
 
         return $this;
     }

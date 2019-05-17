@@ -54,6 +54,7 @@ use UTC;
 /**
  * TicketController.
  *
+ * @property  layout
  * @author      Ladybird <info@ladybirdweb.com>
  */
 class TicketController extends Controller
@@ -94,7 +95,7 @@ class TicketController extends Controller
      *
      * @param type CreateTicketRequest $request
      *
-     * @return type response
+     * @return mixed response
      */
     public function post_newticket(CreateTicketRequest $request, CountryCode $code, $api = false)
     {
@@ -472,6 +473,9 @@ class TicketController extends Controller
             $ticket->type_id = Input::get('type_id');
             $dept = Help_topic::select('department')->where('id', '=', $ticket->help_topic_id)->first();
             $ticket->dept_id = $dept->department;
+
+            if (Input::get('team_id')) $ticket->team_id = Input::get('team_id');
+
             $ticket->save();
 
             $threads = $thread->where('ticket_id', '=', $ticket_id)->first();
@@ -551,9 +555,7 @@ class TicketController extends Controller
         $setting = $ticket_settings->find(1);
         $format = $setting->num_format;
         $type = $setting->num_sequence;
-        $number = $this->getNumber($ticket_number, $type, $format);
-
-        return $number;
+        return $this->getNumber($ticket_number, $type, $format);
     }
 
     public function getNumber($ticket_number, $type, $format, $check = true)
@@ -611,11 +613,7 @@ class TicketController extends Controller
     public function checkMobile($mobile)
     {
         $check = User::where('mobile', '=', $mobile)->first();
-        if (count($check) > 0) {
-            return true;
-        }
-
-        return false;
+        return count($check) > 0;
     }
 
     /**
@@ -630,7 +628,7 @@ class TicketController extends Controller
      * @param type $priority
      * @param type $system
      *
-     * @return type bool
+     * @return mixed bool
      */
     public function create_user($emailadd, $username, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $auto_response, $status, $type_id)
     {
@@ -995,6 +993,9 @@ class TicketController extends Controller
         $ticket->dept_id = $dept;
         $ticket->type_id = $type_id;
         $ticket->help_topic_id = $helptopic;
+
+        $ticket->team_id = (Auth::user()->role == 'user' || !isset($form_data['team_id'])) ? 1 : $form_data['team_id'];
+        unset($form_data['team_id']);
 
         $sla_by_priority = DB::table('workflow_name')
             ->join('workflow_action', 'workflow_name.id', '=', 'workflow_action.workflow_id')
@@ -1491,17 +1492,11 @@ class TicketController extends Controller
      *
      * @param type $keyword
      *
-     * @return type array
+     * @return mixed array
      */
     public function search($keyword)
     {
-        if (isset($keyword)) {
-            $data = ['ticket_number' => Tickets::search($keyword)];
-
-            return $data;
-        } else {
-            return 'no results';
-        }
+        return isset($keyword) ? ['ticket_number' => Tickets::search($keyword)] : 'no results';
     }
 
     /**

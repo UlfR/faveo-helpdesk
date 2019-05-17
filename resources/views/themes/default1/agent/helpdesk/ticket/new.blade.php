@@ -188,6 +188,36 @@ class="active"
                 <div id="response" class="col-md-6 form-group"></div>
             </div>
             <div class="row">
+                <!-- priority -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>{!! Lang::get('lang.priority') !!}:</label>
+                        <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get(); ?>
+                        {!! Form::select('priority', ['Priority'=>$Priority->pluck('priority_desc','priority_id')->toArray()],null,['class' => 'form-control select']) !!}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>{!! Lang::get('lang.type') !!}:</label>
+                        {!! Form::select('type_id', ['Type'=>App\Model\helpdesk\Ticket\Tickets::TYPES],null,['class' => 'form-control select']) !!}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>{!! Lang::get('lang.support_level') !!}</label>
+                        <?php $levels = App\Model\helpdesk\Agent\Teams::query()->find([1, 4]); $level = null; ?>
+                        <select class="form-control" name="team_id">
+                            @foreach($levels as $level)
+                                <option value="{!! $level->id !!}" <?php if (1 == $level->id) {echo 'selected';}?>>
+                                    {!! $level->name !!}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
             {{-- Event fire --}}
             <?php Event::fire(new App\Events\ClientTicketForm()); ?>
             </div>
@@ -218,34 +248,9 @@ class="active"
                     </div>
                     <div class="col-md-9">
                         {!! Form::textarea('body',null,['class' => 'form-control','id' => 'body', 'style'=>"width:100%; height:150px;"]) !!}
-
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <!-- priority -->
-                <div class="row">
-                    <div class="col-md-1">
-                        <label>{!! Lang::get('lang.priority') !!}:</label>
-                    </div>
-                    <div class="col-md-3">
-                        <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get(); ?>
-                        {!! Form::select('priority', ['Priority'=>$Priority->pluck('priority_desc','priority_id')->toArray()],null,['class' => 'form-control select']) !!}
-                    </div>
-                    
-                </div>
-                <!-- type -->
-                <div class="row">
-                    <div class="col-md-1">
-                        <label>{!! Lang::get('lang.type') !!}:</label>
-                    </div>
-                    <div class="col-md-3">
-                        {!! Form::select('type_id', ['Type'=>App\Model\helpdesk\Ticket\Tickets::TYPES],null,['class' => 'form-control select']) !!}
-                    </div>
-
-                </div>
-            </div>
-             
         </div>
     </div>
     <div class="box-footer">

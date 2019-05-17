@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string poster
  * @property type ticket_id
  * @property type user_id
+ * @property int is_internal
  */
 class Ticket_Thread extends Model
 {

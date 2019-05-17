@@ -17,6 +17,9 @@ $user = App\User::where('id', '=', $tickets->user_id)->first();
 $assignedto = App\User::where('id', '=', $tickets->assigned_to)->first();
 $agent_group = Auth::user()->assign_group;
 $group = App\Model\helpdesk\Agent\Groups::where('id', '=', $agent_group)->where('group_status', '=', '1')->first();
+$supportLevel = $tickets->supportLevel;
+$supportLevelName = $supportLevel ? $supportLevel->name : '';
+$supportLevelID = $supportLevel ? $supportLevel->id : '';
 ?>
 
 @section('sidebar')
@@ -305,6 +308,7 @@ if ($thread->title != "") {
                                     <td title="{{$help_topic->desc()}}">{{$help_topic->desc()}}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.last_message') !!}:</b></td>   <td>{{str_limit($username,30)}}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.organization') !!}:</b></td>   <td>{!!$LastResponse->getOrgWithLink()!!}</td></tr>
+                                <tr><td><b>{!! Lang::get('lang.support_level') !!}:</b></td>   <td>{!! $supportLevelName !!}</td></tr>
                                 <?php Event::fire(new App\Events\TicketDetailTable($TicketData)); ?>
                             </div>
                         </table>
@@ -914,6 +918,20 @@ if ($thread->title != "") {
                                         @endforeach
                                     </select>
                                     <spam id="error-type_id" style="display:none" class="help-block text-red">This is a required field</spam>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{!! Lang::get('lang.support_level') !!}</label>
+                                    <?php $levels = App\Model\helpdesk\Agent\Teams::query()->find([1, 4]); $level = null; ?>
+                                    <select class="form-control" name="team_id">
+                                        @foreach($levels as $level)
+                                            <option
+                                                value="{!! $level->id !!}"
+                                                <?php if ($supportLevelID == $level->id) {echo 'selected';}?>
+                                            >{!! $level->name !!}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
