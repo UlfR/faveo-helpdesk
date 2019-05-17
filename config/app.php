@@ -188,7 +188,7 @@ return [
         App\FaveoStorage\StorageServiceProvider::class,
         Yajra\Datatables\DatatablesServiceProvider::class,
         \App\Api\ApiServiceProvider::class,
-
+        Telegram\Bot\Laravel\TelegramServiceProvider::class,
     ],
     /*
       |--------------------------------------------------------------------------
@@ -257,5 +257,6 @@ return [
         'Finder'       => App\Helper\Finder::class,
         'Datatables'   => Yajra\Datatables\Facades\Datatables::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
+        'Telegram'     => Telegram\Bot\Laravel\Facades\Telegram::class,
     ],
 ];

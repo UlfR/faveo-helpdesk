@@ -4,6 +4,10 @@ namespace App\Model\helpdesk\Manage;
 
 use App\BaseModel;
 
+/**
+ * @property mixed parent_topic
+ * @property mixed topic
+ */
 class Help_topic extends BaseModel
 {
     protected $table = 'help_topic';
@@ -31,5 +35,10 @@ class Help_topic extends BaseModel
         } else {
             return $this->topic;
         }
+    }
+
+    public function parent()
+    {
+        return self::query()->where('topic', '=', $this->parent_topic)->first();
     }
 }

@@ -92,7 +92,7 @@ class="active"
             <b>Alert!</b>
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <br/>
-                <li class="error-message-padding">{!! Session::get('fails2') !!}</li>
+                <div class="error-message-padding">{!! Session::get('fails2') !!}</div>
             </div>
         @endif
         <div class="row">
@@ -138,6 +138,11 @@ class="active"
             <div class="col-xs-3 form-group {{ $errors->has('mobile') ? 'has-error' : '' }}">
                 {!! Form::label('mobile',Lang::get('lang.mobile_number')) !!}@if($send_otp->status ==1)<span class="text-red"> *</span>@endif
                 {!! Form::input('number', 'mobile',null,['class' => 'form-control']) !!}
+            </div>
+            <!-- Telegram -->
+            <div class="col-xs-3 form-group {{ $errors->has('telegram') ? 'has-error' : '' }}">
+                {!! Form::label('telegram',Lang::get('lang.telegram')) !!}
+                {!! Form::text('telegram',null,['class' => 'form-control']) !!}
             </div>
         </div>
         <div class="row">

@@ -190,6 +190,11 @@ class="active"
 
             </div>
 
+            <!-- Telegram -->
+            <div class="col-xs-3 form-group {{ $errors->has('telegram') ? 'has-error' : '' }}">
+                {!! Form::label('telegram',Lang::get('lang.telegram')) !!}
+                {!! Form::text('telegram',null,['class' => 'form-control']) !!}
+            </div>
         </div>
         <!-- Agent signature -->
         <div>

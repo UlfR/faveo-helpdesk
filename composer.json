@@ -35,6 +35,7 @@
         "torann/geoip": "^1.0",
         "yajra/laravel-datatables-oracle": "~6.0",
         "flowjs/flow-php-server": "^1.0",
+        "irazasyed/telegram-bot-sdk": "^2.0",
         "doctrine/dbal": "^2.5"
     },
     "require-dev": {

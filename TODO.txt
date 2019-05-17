@@ -32,23 +32,12 @@ CREATE TABLE `kb_entity_visibility_defaults` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-tickets:
-    telegram
-    sms
-    subtopic is required
+ALTER TABLE `users` ADD `telegram` VARCHAR(20) NULL DEFAULT NULL AFTER `user_language`;
 
-topics:
-    visibility by org
-    visibility by dep
-    visibility by team
+sms for agents on tickets
+full translate
+cleanup client pages
 
-articles:
-    visibility by org
-    visibility by dep
-    visibility by team
-
-misc:
-    cleanup main page
-    translate
-    remove deps, orgs and teams with user remove
-    agent remove
+articles visibility by org/dep/team
+subtopic for ticket is required
+remove deps, orgs and teams with user remove, agent remove

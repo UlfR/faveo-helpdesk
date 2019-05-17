@@ -3,7 +3,21 @@
 namespace App\Model\helpdesk\Ticket;
 
 use App\BaseModel;
+use App\Model\helpdesk\Manage\Sla_plan;
+use App\Model\helpdesk\Utility\Priority;
+use Exception;
+use Log;
+use App\User;
+use App\Model\helpdesk\Manage\Help_topic;
 
+/**
+ * @property mixed id
+ * @property mixed type_id
+ * @property mixed priority
+ * @property mixed thread
+ * @property mixed user
+ * @property mixed helptopic
+ */
 class Tickets extends BaseModel
 {
     public const TYPES = ['question', 'issue', 'feature'];
@@ -16,17 +30,17 @@ class Tickets extends BaseModel
 //        }
     public function thread()
     {
-        return $this->hasMany('App\Model\helpdesk\Ticket\Ticket_Thread', 'ticket_id');
+        return $this->hasMany(Ticket_Thread::class, 'ticket_id');
     }
 
     public function collaborator()
     {
-        return $this->hasMany('App\Model\helpdesk\Ticket\Ticket_Collaborator', 'ticket_id');
+        return $this->hasMany(Ticket_Collaborator::class, 'ticket_id');
     }
 
     public function helptopic()
     {
-        $related = 'App\Model\helpdesk\Manage\Help_topic';
+        $related = Help_topic::class;
         $foreignKey = 'help_topic_id';
 
         return $this->belongsTo($related, $foreignKey);
@@ -34,13 +48,13 @@ class Tickets extends BaseModel
 
     public function formdata()
     {
-        return $this->hasMany('App\Model\helpdesk\Ticket\Ticket_Form_Data', 'ticket_id');
+        return $this->hasMany(Ticket_Form_Data::class, 'ticket_id');
     }
 
     public function extraFields()
     {
         $id = $this->attributes['id'];
-        $ticket_form_datas = \App\Model\helpdesk\Ticket\Ticket_Form_Data::where('ticket_id', '=', $id)->get();
+        $ticket_form_datas = Ticket_Form_Data::query()->where('ticket_id', '=', $id)->get();
 
         return $ticket_form_datas;
     }
@@ -48,10 +62,7 @@ class Tickets extends BaseModel
     public function source()
     {
         $source_id = $this->attributes['source'];
-        $sources = new Ticket_source();
-        $source = $sources->find($source_id);
-
-        return $source;
+        return Ticket_source::query()->find($source_id);
     }
 
     public function sourceCss()
@@ -84,26 +95,120 @@ class Tickets extends BaseModel
 
     public function getAssignedTo()
     {
-        $agentid = $this->attributes['assigned_to'];
-        if ($agentid) {
-            $users = new \App\User();
-            $user = $users->where('id', $agentid)->first();
-            if ($user) {
-                return $user;
-            }
-        }
+        return User::query()->find($this->attributes['assigned_to']);
     }
 
     public function user()
     {
-        $related = "App\User";
-        $foreignKey = 'user_id';
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-        return $this->belongsTo($related, $foreignKey);
+    public function priority()
+    {
+        return $this->belongsTo(Priority::class, 'priority_id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Ticket_Status::class, 'status')->first();
+    }
+
+    public function sla()
+    {
+        return $this->belongsTo(Sla_plan::class, 'sla')->first();
     }
 
     public function type()
     {
         return self::TYPES[$this->attributes['type_id']];
     }
+
+    public function getTelegram()
+    {
+        $chat_ids = [];
+        $team_ids = $this->user->teamIDs();
+
+        if (in_array(1, $team_ids)) $chat_ids[] = '-322027375'; //1level
+        if (in_array(4, $team_ids)) $chat_ids[] = '-390912367'; //2level
+        if (count($chat_ids) == 0) {
+            $chat_ids[] = '-322027375'; //1level
+            //$chat_ids[]= '265102183'; //admin
+        }
+
+        return $chat_ids;
+    }
+
+    public function getMessageInfo()
+    {
+        $user      = $this->user;
+        $email     = $user->email;
+        $name      = implode(' ', [$user->first_name, $user->last_name]);
+        $deps      = implode(', ',
+            $user->organizations()->get()->map(function($r){return $r->organization->name;})->toArray()
+        );
+        $mods      = implode(', ',
+            $user->departments()->get()->map(function($r){return $r->department->name;})->toArray()
+        );
+        $teams     = implode(', ',
+            $user->teams()->get()->map(function($r){return $r->team->name;})->toArray()
+        );
+
+        $type      = $this->type();
+        $status    = $this->status()->name;
+        $priority  = $this->priority->priority;
+
+        $thread    = $this->thread->first();
+        $subject   = $thread->title;
+        $body      = $thread->body;
+
+        $helptopic = $this->helptopic;
+        $topics    = implode(' > ', [$helptopic->parent_topic, $helptopic->topic]);
+
+        $sla       = $this->sla();
+        $sla       = $sla ? $sla->grace_period : '-';
+
+        return <<<ZZZ
+User: {$name}({$email})
+Departments: {$deps}
+Modules: {$mods}
+Teams: {$teams}
+Priority: {$priority}
+SLA: {$sla}
+Type: {$type}
+Status: {$status}
+Topics: {$topics}
+Subject: {$subject}
+-----
+{$body}
+ZZZ;
+    }
+
+    public function sendToTelegram($current_user, $type, $message=null)
+    {
+        $ticket_link = route('ticket.thread', [$this->id]);
+        $head        = "#{$this->id}({$ticket_link})";
+        $message     = $message ?: $this->getMessageInfo();
+        $text        = "Ticket message\n$head:{$message}";
+        $agent       = $this->getAssignedTo();
+        $chat_ids    = $agent ? [$agent->telegram] : $this->getTelegram();
+
+        if ($agent && $agent->id == $current_user->id) return $this;
+        if ($type == 'create') $text = "Ticket created\n$head:{$message}";
+        if ($type == 'update') $text = "Ticket updated\n$head:{$message}";
+
+        try {
+            Log::info('sendToTelegram: ' . $text . ' to ' . implode(', ', $chat_ids));
+            foreach ($chat_ids as $chat_id) \Telegram::sendMessage(['chat_id' => $chat_id, 'text' => $text]);
+        } catch (Exception $e) {
+            Log::info('sendToTelegram failed: ' . $e->getMessage());
+        }
+
+        return $this;
+    }
+
+    #TODO send sms
+    public function sendToSMS($params)
+    {
+    }
+
 }

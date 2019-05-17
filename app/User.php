@@ -36,7 +36,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     protected $fillable = ['user_name', 'email', 'password', 'active', 'first_name', 'last_name', 'ban', 'ext', 'mobile', 'profile_pic',
         'phone_number', 'company', 'agent_sign', 'account_type', 'account_status',
         'assign_group', 'primary_dpt', 'agent_tzone', 'daylight_save', 'limit_access',
-        'directory_listing', 'vacation_mode', 'role', 'internal_note', 'country_code', 'not_accept_ticket', 'is_delete', ];
+        'directory_listing', 'vacation_mode', 'role', 'internal_note', 'country_code', 'not_accept_ticket', 'is_delete', 'telegram_id',];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -203,15 +203,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return [];
     }
 
+    public function organizations() {
+        return User_org::query()->where('user_id', '=', $this->id);
+    }
+
+    public function departments() {
+        return User_dep::query()->where('user_id', '=', $this->id);
+    }
+
+    public function teams() {
+        return Assign_team_agent::query()->where('agent_id', '=', $this->id);
+    }
+
     public function orgIDs() {
-        return User_org::query()->where('user_id', '=', $this->id)->pluck('org_id')->toArray();
+        return $this->organizations()->pluck('org_id')->toArray();
     }
 
     public function depIDs() {
-        return User_dep::query()->where('user_id', '=', $this->id)->pluck('dep_id')->toArray();
+        return $this->departments()->pluck('dep_id')->toArray();
     }
 
     public function teamIDs() {
-        return Assign_team_agent::query()->where('agent_id', '=', $this->id)->pluck('team_id')->toArray();
+        return $this->teams()->pluck('team_id')->toArray();
     }
 }

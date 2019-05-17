@@ -137,6 +137,7 @@ class AgentController extends Controller
         $password = $this->generateRandomString();
         $user->password = Hash::make($password);
         // save user credentails
+        $user->telegram = $request->input('telegram');
         if ($user->save() == true) {
             $requests = $request->input('team');
             foreach ($requests as $req) {
@@ -262,6 +263,7 @@ class AgentController extends Controller
             $user->assign_group = $request->group;
             $user->primary_dpt = $request->primary_department;
             $user->agent_tzone = $request->agent_time_zone;
+            $user->telegram = $request->input('telegram');
             $user->save();
 
             if ($request->input('org_id') != '') {

@@ -11,4 +11,5 @@ class Priority extends BaseModel
     protected $fillable = [
         'id', 'name',
     ];
+    protected $primaryKey = 'priority_id';
 }

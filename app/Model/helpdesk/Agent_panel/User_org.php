@@ -21,4 +21,9 @@ class User_org extends BaseModel
             $this->attributes['org_id'] = $value;
         }
     }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'org_id');
+    }
 }
