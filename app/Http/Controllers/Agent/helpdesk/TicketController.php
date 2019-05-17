@@ -341,14 +341,14 @@ class TicketController extends Controller
                         'id' => $tickets->id,
                     ];
                     \Event::fire('ticket-assignment', [$data]);
-                    $tickets->sendToTelegram(Auth::user(), 'message', $thread2->title.'\n'.$thread2->body);
+                    $tickets->sendToTelegram(Auth::user(), 'message', $thread2->body);
                 }
                 if ($tickets->status > 1) {
                     $this->open($ticket_id, new Tickets());
                 }
             }
             $thread->save();
-            $tickets->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+            $tickets->sendToTelegram(Auth::user(), 'message', $thread->body);
 
             if ($attachments != null) {
                 foreach ($attachments as $attachment) {
@@ -1068,11 +1068,11 @@ class TicketController extends Controller
             }
         }
         \Event::fire('after.ticket.created', [['ticket' => $ticket, 'form_data' => $form_data]]);
-        $ticket->sendToTelegram(Auth::user(), 'create');
 
         // store collaborators
         $this->storeCollaborators($headers, $id);
-        if ($this->ticketThread($subject, $body, $id, $user_id) == true) {
+        if ($this->ticketThread($subject, $body, $id, $user_id, false) == true) {
+            $ticket->sendToTelegram(Auth::user(), 'create');
             return $ticket_number;
         }
     }
@@ -1085,9 +1085,9 @@ class TicketController extends Controller
      * @param type $id
      * @param type $user_id
      *
-     * @return type
+     * @return bool
      */
-    public function ticketThread($subject, $body, $id, $user_id)
+    public function ticketThread($subject, $body, $id, $user_id, $doSendTG=true)
     {
         $thread = new Ticket_Thread();
         $thread->user_id = $user_id;
@@ -1097,7 +1097,7 @@ class TicketController extends Controller
         $thread->body = $body;
         if ($thread->save()) {
             $ticket = Tickets::query()->find($id);
-            $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+            if ($doSendTG) $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.' -- '.$thread->body);
             \Event::fire('ticket.details', ['ticket' => $thread]); //get the ticket details
             return true;
         }
@@ -1156,7 +1156,7 @@ class TicketController extends Controller
         $thread->body = $ticket_status_message->message.' '.Auth::user()->first_name.' '.Auth::user()->last_name;
         $thread->save();
 
-        $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+        $ticket_status->sendToTelegram(Auth::user(), 'message', $thread->body);
 
         $user_id = $ticket_status->user_id;
         $user = User::where('id', '=', $user_id)->first();
@@ -1224,7 +1224,7 @@ class TicketController extends Controller
         }
         $thread->save();
 
-        $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+        $ticket_status->sendToTelegram(Auth::user(), 'message', $thread->body);
 
         $data = [
             'id'         => $ticket_status->ticket_number,
@@ -1266,6 +1266,7 @@ class TicketController extends Controller
         $thread->is_internal = 1;
         $thread->body = $ticket_status_message->message.' '.Auth::user()->first_name.' '.Auth::user()->last_name;
         $thread->save();
+        $ticket_status->sendToTelegram(Auth::user(), 'message', $thread->body);
         $data = [
             'id'         => $ticket_status->ticket_number,
             'status'     => 'Open',
@@ -1385,7 +1386,7 @@ class TicketController extends Controller
                 $thread->body = 'This Ticket has been assigned to '.$assignee;
                 $thread->save();
 
-                $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+                $ticket->sendToTelegram(Auth::user(), 'message', $thread->body);
             } elseif ($assign_to[0] == 'user') {
                 $ticket->assigned_to = $assign_to[1];
                 if ($user_detail === null) {
@@ -1409,7 +1410,7 @@ class TicketController extends Controller
                 $thread->body = 'This Ticket has been assigned to '.$assignee;
                 $thread->save();
 
-                $ticket->sendToTelegram(Auth::user(), 'message', $thread->title.'\n'.$thread->body);
+                $ticket->sendToTelegram(Auth::user(), 'message', $thread->body);
 
                 $agent = $user_detail->first_name;
                 $agent_email = $user_detail->email;
@@ -1477,7 +1478,7 @@ class TicketController extends Controller
         $NewThread->body = $InternalContent;
         $NewThread->save();
 
-        $ticket->sendToTelegram(Auth::user(), 'message', $NewThread->title.'\n'.$NewThread->body);
+        $ticket->sendToTelegram(Auth::user(), 'message', $NewThread->body);
 
         $ticket->assigned_to = null;
         $ticket->save();

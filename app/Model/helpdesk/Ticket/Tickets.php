@@ -18,6 +18,16 @@ use App\Model\helpdesk\Manage\Help_topic;
  * @property mixed user
  * @property mixed helptopic
  * @property mixed ticket_number
+ * @property \DateTime|false duedate
+ * @property mixed created_at
+ * @property mixed status
+ * @property mixed sla
+ * @property type assigned_to
+ * @property type priority_id
+ * @property type source
+ * @property type help_topic_id
+ * @property type user_id
+ * @property type dept_id
  */
 class Tickets extends BaseModel
 {
@@ -96,7 +106,7 @@ class Tickets extends BaseModel
 
     public function getAssignedTo()
     {
-        return User::query()->find($this->attributes['assigned_to']);
+        return User::query()->find($this->assigned_to);
     }
 
     public function user()
@@ -127,7 +137,7 @@ class Tickets extends BaseModel
     public function getTelegram()
     {
         $chat_ids = [];
-        $team_ids = $this->user->teamIDs();
+        $team_ids = $this->user ? $this->user->teamIDs() : [];
 
         if (in_array(1, $team_ids)) $chat_ids[] = '-322027375'; //1level
         if (in_array(4, $team_ids)) $chat_ids[] = '-390912367'; //2level
@@ -159,8 +169,8 @@ class Tickets extends BaseModel
         $priority  = $this->priority->priority;
 
         $thread    = $this->thread->first();
-        $subject   = $thread->title;
-        $body      = $thread->body;
+        $subject   = $thread ? $thread->title : '';
+        $body      = $thread ? $thread->body : '';
 
         $helptopic = $this->helptopic;
         $topics    = implode(' > ', [$helptopic->parent_topic, $helptopic->topic]);

@@ -4,6 +4,12 @@ namespace App\Model\helpdesk\Ticket;
 
 use App\BaseModel;
 
+/**
+ * @property mixed ticket_id
+ * @property int|string title
+ * @property  content
+ * @property  content
+ */
 class Ticket_Form_Data extends BaseModel
 {
     protected $table = 'ticket_form_data';

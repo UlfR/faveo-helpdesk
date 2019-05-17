@@ -6,6 +6,13 @@ namespace App\Model\helpdesk\Ticket;
 use File;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property type|mixed title
+ * @property type|mixed body
+ * @property string poster
+ * @property type ticket_id
+ * @property type user_id
+ */
 class Ticket_Thread extends Model
 {
     protected $table = 'ticket_thread';
