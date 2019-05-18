@@ -34,6 +34,8 @@ CREATE TABLE `kb_entity_visibility_defaults` (
 
 ALTER TABLE `users` ADD `telegram` VARCHAR(20) NULL DEFAULT NULL AFTER `user_language`;
 
+FIXME topics->parents!!!!!! broken
+
 sms for agents on tickets
 full translate
 cleanup client pages

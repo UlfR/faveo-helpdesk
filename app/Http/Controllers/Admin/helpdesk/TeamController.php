@@ -174,19 +174,20 @@ class TeamController extends Controller
             ->addColumn('assign_group', function ($model) {
                 $group = Groups::whereId($model->assign_group)->first();
 
-                return $group->name;
+                return $group ? $group->name : '';
             })
             ->addColumn('primary_dpt', function ($model) {
                 $dept = Department::whereId($model->primary_dpt)->first();
 
-                return $dept->name;
+                return $dept ? $dept->name : '';
             })
             ->addColumn('role', function ($model) {
                 if ($model->role == 'admin') {
                     $role = "<a class='btn btn-success btn-xs'>".$model->role.'</a>';
                 } elseif ($model->role == 'agent') {
                     $role = "<a class='btn btn-primary btn-xs'>".$model->role.'</a>';
-                }
+                } else
+                    $role = '';
 
                 return $role;
             })
