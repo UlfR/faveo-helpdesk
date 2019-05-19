@@ -29,7 +29,7 @@ class TicketForm extends Request
     public function rules()
     {
         return [
-            'help_topic' => 'required',
+            'helptopic' => 'required',
             'Email'      => 'required',
             'Subject'    => 'required',
             'Detail'     => 'required',

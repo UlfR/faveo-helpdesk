@@ -150,7 +150,7 @@ class = "active"
            @endif
             <?php
 //            $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '=', '')->get();
-            $helptopic = App\Model\helpdesk\Manage\Help_topic::query()->where('status', '=', 1)->get();
+              $helptopic = App\Model\helpdesk\Manage\Help_topic::activesHash();
 //            $subtopics = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '!=', '')->get();
 //            $topic_by_name = $helptopic->map(function($a){return [$a->id, $a->topic];})->reduce(function($a,$v){$a[$v[1]] = $v[0]; return $a;}, []);
             ?>
@@ -159,8 +159,8 @@ class = "active"
                 {!! Form::label('help_topic', Lang::get('lang.choose_a_help_topic')) !!} 
                 {!! $errors->first('help_topic', '<spam class="help-block">:message</spam>') !!}
                 <select name="helptopic_par" class="form-control" id="selectid">
-                    @foreach($helptopic as $topic)
-                    <option value="{!! $topic->id !!}">{!! $topic->desc() !!}</option>
+                    @foreach($helptopic as $topic_id => $topic_name)
+                    <option value="{!! $topic_id !!}">{!! $topic_name !!}</option>
                     @endforeach
                 </select>
             </div>

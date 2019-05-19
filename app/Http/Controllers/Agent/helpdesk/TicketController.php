@@ -2480,20 +2480,12 @@ class TicketController extends Controller
 
     public function getSystemDefaultHelpTopic()
     {
-        $ticket_settings = new \App\Model\helpdesk\Settings\Ticket();
-        $ticket_setting = $ticket_settings->find(1);
-        $help_topicid = $ticket_setting->help_topic;
-
-        return $help_topicid;
+        return \App\Model\helpdesk\Settings\Ticket::query()->find(1)->help_topic;
     }
 
     public function getSystemDefaultSla()
     {
-        $ticket_settings = new \App\Model\helpdesk\Settings\Ticket();
-        $ticket_setting = $ticket_settings->find(1);
-        $sla = $ticket_setting->sla;
-
-        return $sla;
+        return \App\Model\helpdesk\Settings\Ticket::query()->find(1)->sla;
     }
 
     public function getSystemDefaultPriority()

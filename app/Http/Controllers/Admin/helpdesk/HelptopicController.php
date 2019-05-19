@@ -49,7 +49,7 @@ class HelptopicController extends Controller
     public function index(Help_topic $topic)
     {
         try {
-            $topics = $topic->get();
+            $topics = Help_topic::activesObject();
 
             return view('themes.default1.admin.helpdesk.manage.helptopic.index', compact('topics'));
         } catch (Exception $e) {

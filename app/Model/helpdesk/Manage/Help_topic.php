@@ -47,4 +47,16 @@ class Help_topic extends BaseModel
     public function parentName() {
         return $this->parent ? $this->parent->topic : null;
     }
+
+    public static function actives() {
+        return self::query()->where('status', '=', 1);
+    }
+
+    public static function activesHash() {
+        return self::activesObject()->map(function($x){return [$x->id, $x->desc()];})->reduce(function($a, $v){$a[$v[0]] = $v[1]; return $a;});
+    }
+
+    public static function activesObject() {
+        return self::actives()->get()->sort(function($a, $b){ return $a->desc() <=> $b->desc();});
+    }
 }

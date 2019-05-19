@@ -100,7 +100,7 @@ class="active"
                     <div class="col-md-6">
                         <div class="form-group {{ $errors->has('parent_topic') ? 'has-error' : '' }}">
                             {!! Form::label('parent_topic',Lang::get('lang.parent_topic')) !!}
-                            {!!Form::select('parent_topic', [''=>Lang::get('lang.select_a_parent_topic'),Lang::get('lang.help_topic')=>$topics->pluck('topic','id')->toArray()],1,['class' => 'form-control']) !!}
+                            {!!Form::select('parent_topic', ['' => Lang::get('lang.select_a_parent_topic'), Lang::get('lang.help_topic') => \App\Model\helpdesk\Manage\Help_topic::activesHash()], null, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                     <!-- Custom Form: Drop down: value from form table -->

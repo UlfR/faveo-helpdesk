@@ -858,15 +858,15 @@ if ($thread->title != "") {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{!! Lang::get('lang.help_topic') !!} <span class="text-red"> *</span></label>
-
-    <?php $help_topics = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->get(); ?>
+                                    <?php $topics = App\Model\helpdesk\Manage\Help_topic::activesHash(); ?>
                                     <select class="form-control" name="help_topic">
-                                        @foreach($help_topics as $helptopic)
-                                        <option value="{!! $helptopic->id !!}" <?php
-                                        if ($help_topic->id == $helptopic->id) {
-                                            echo 'selected';
-                                        }
-                                        ?> >{!! $helptopic->desc() !!}</option>
+                                        @foreach($topics as $topic_id => $topic_name)
+                                        <option
+                                            value="{!! $topic_id !!}"
+                                            <?php if ($help_topic->id == $topic_id) {echo 'selected';} ?>
+                                        >
+                                            {!! $topic_name !!}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <spam id="error-help" style="display:none" class="help-block text-red">This is a required field</spam>

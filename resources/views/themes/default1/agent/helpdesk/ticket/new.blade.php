@@ -155,17 +155,11 @@ class="active"
         <div class="form-group">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label>{!! Lang::get('lang.help_topic') !!}:</label>
+                    <div class="form-group {{ $errors->has('helptopic') ? 'has-error' : '' }}">
+                        <label>{!! Lang::get('lang.help_topic') !!} <span class="text-red"> *</span></label>
                         <!-- helptopic -->
-                        <?php $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->select('topic', 'id')->get(); ?>
-                        <?php
-                            $topics = App\Model\helpdesk\Manage\Help_topic::query()
-                                ->where('status', '=', 1)->get()
-                                ->map(function($t){return [$t->id, $t->desc()];})
-                                ->reduce(function($a, $v){$a[$v[0]] = $v[1]; return $a;}, []);
-                        ?>
-                        {!! Form::select('helptopic', ['Helptopic'=>$topics],null,['class' => 'form-control select','id'=>'selectid']) !!}
+                        <?php $topics = App\Model\helpdesk\Manage\Help_topic::activesHash(); ?>
+                        {!! Form::select('helptopic', ['' => Lang::get('lang.select_a_topic'), Lang::get('lang.help_topic') => \App\Model\helpdesk\Manage\Help_topic::activesHash()], null, ['class' => 'form-control', 'id'=>'selectid']) !!}
                     </div>
                 </div>
                 <div class="col-md-3">
