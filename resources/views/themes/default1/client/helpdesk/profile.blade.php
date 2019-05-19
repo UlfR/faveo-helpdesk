@@ -78,38 +78,38 @@ class="active"
                             {{$user->email}}
                         </div>
                     </div>
-                    <div class="form-group {{ $errors->has('company') ? 'has-error' : '' }}">
-                        <!-- company -->
-                        {!! Form::label('company',Lang::get('lang.company')) !!}
-                        
-                        {!! Form::text('company',null,['class' => 'form-control']) !!}
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-2 form-group {{ $errors->has('country_code') ? 'has-error' : '' }}">
-                            <!-- phone extensionn -->
-                            {!! Form::label('country_code',Lang::get('lang.country-code')) !!}
-                            {!! Form::text('country_code',null,['class' => 'form-control', 'placeholder' => $phonecode, 'title' => Lang::get('lang.enter-country-phone-code'), 'id' => 'code']) !!}
+{{--                    <div class="form-group {{ $errors->has('company') ? 'has-error' : '' }}">--}}
+{{--                        <!-- company -->--}}
+{{--                        {!! Form::label('company',Lang::get('lang.company')) !!}--}}
+{{--                        --}}
+{{--                        {!! Form::text('company',null,['class' => 'form-control']) !!}--}}
+{{--                    </div>--}}
+{{--                    <div class="row">--}}
+{{--                        <div class="col-xs-2 form-group {{ $errors->has('country_code') ? 'has-error' : '' }}">--}}
+{{--                            <!-- phone extensionn -->--}}
+{{--                            {!! Form::label('country_code',Lang::get('lang.country-code')) !!}--}}
+{{--                            {!! Form::text('country_code',null,['class' => 'form-control', 'placeholder' => $phonecode, 'title' => Lang::get('lang.enter-country-phone-code'), 'id' => 'code']) !!}--}}
 
-                        </div>  
-                        <div class="col-xs-2 form-group {{ $errors->has('ext') ? 'has-error' : '' }}">
-                            <!-- phone extensionn -->
-                            {!! Form::label('ext',Lang::get('lang.ext')) !!}
-                           
-                            {!! Form::text('ext',null,['class' => 'form-control']) !!}
-                        </div>
-                        <div class="col-xs-8 form-group {{ $errors->has('phone_number') ? 'has-error' : '' }}">
-                            <!-- phone number -->
-                            {!! Form::label('phone_number',Lang::get('lang.phone')) !!}
-                           
-                            {!! Form::text('phone_number',null,['class' => 'form-control']) !!}
-                        </div>
-                    </div>
-                    <div class="form-group {{ $errors->has('mobile') ? 'has-error' : '' }}">
-                        <!-- mobile -->
-                        {!! Form::label('mobile',Lang::get('lang.mobile_number')) !!}
-                        
-                        {!! Form::input('number', 'mobile',null,['class' => 'form-control', 'id' => 'mobile']) !!}
-                    </div>
+{{--                        </div>  --}}
+{{--                        <div class="col-xs-2 form-group {{ $errors->has('ext') ? 'has-error' : '' }}">--}}
+{{--                            <!-- phone extensionn -->--}}
+{{--                            {!! Form::label('ext',Lang::get('lang.ext')) !!}--}}
+{{--                           --}}
+{{--                            {!! Form::text('ext',null,['class' => 'form-control']) !!}--}}
+{{--                        </div>--}}
+{{--                        <div class="col-xs-8 form-group {{ $errors->has('phone_number') ? 'has-error' : '' }}">--}}
+{{--                            <!-- phone number -->--}}
+{{--                            {!! Form::label('phone_number',Lang::get('lang.phone')) !!}--}}
+{{--                           --}}
+{{--                            {!! Form::text('phone_number',null,['class' => 'form-control']) !!}--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="form-group {{ $errors->has('mobile') ? 'has-error' : '' }}">--}}
+{{--                        <!-- mobile -->--}}
+{{--                        {!! Form::label('mobile',Lang::get('lang.mobile_number')) !!}--}}
+{{--                        --}}
+{{--                        {!! Form::input('number', 'mobile',null,['class' => 'form-control', 'id' => 'mobile']) !!}--}}
+{{--                    </div>--}}
                     <div class="form-group {{ $errors->has('profile_pic') ? 'has-error' : '' }}">
                         <!-- profile pic -->
                         {!! Form::label('profile_pic',Lang::get('lang.profile_pic')) !!}

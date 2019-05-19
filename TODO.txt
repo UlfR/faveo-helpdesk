@@ -34,13 +34,11 @@ CREATE TABLE `kb_entity_visibility_defaults` (
 
 ALTER TABLE `users` ADD `telegram` VARCHAR(20) NULL DEFAULT NULL AFTER `user_language`;
 
-FIXME topics->parents!!!!!! broken
+check ticket create/response from email
+full translate
 
 sms for agents on tickets
-full translate
-cleanup client pages
-
 simplify user select on agent ticket create
 articles visibility by org/dep/team
-subtopic for ticket is required
 remove deps, orgs and teams with user remove, agent remove
+sdfsd
