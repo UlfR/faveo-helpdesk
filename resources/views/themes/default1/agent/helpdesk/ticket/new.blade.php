@@ -159,7 +159,13 @@ class="active"
                         <label>{!! Lang::get('lang.help_topic') !!}:</label>
                         <!-- helptopic -->
                         <?php $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->select('topic', 'id')->get(); ?>
-                        {!! Form::select('helptopic', ['Helptopic'=>$helptopic->pluck('topic','id')->toArray()],null,['class' => 'form-control select','id'=>'selectid']) !!}
+                        <?php
+                            $topics = App\Model\helpdesk\Manage\Help_topic::query()
+                                ->where('status', '=', 1)->get()
+                                ->map(function($t){return [$t->id, $t->desc()];})
+                                ->reduce(function($a, $v){$a[$v[0]] = $v[1]; return $a;}, []);
+                        ?>
+                        {!! Form::select('helptopic', ['Helptopic'=>$topics],null,['class' => 'form-control select','id'=>'selectid']) !!}
                     </div>
                 </div>
                 <div class="col-md-3">

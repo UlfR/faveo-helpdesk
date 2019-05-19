@@ -53,12 +53,11 @@ class="active"
         @endif
         <table class="table table-bordered dataTable">
             <tr>
-                <th width="100px">{{Lang::get('lang.topic')}}</th>
-                <th width="100px">{{Lang::get('lang.status')}}</th>
-                <th width="100px">{{Lang::get('lang.type')}}</th>
-                <th width="100px">{{Lang::get('lang.priority')}}</th>
-                <th width="100px">{{Lang::get('lang.department')}}</th>
-                <th width="100px">{{Lang::get('lang.last_updated')}}</th>
+                <th width="300px">{{Lang::get('lang.topic')}}</th>
+                <th width="50px">{{Lang::get('lang.status')}}</th>
+                <th width="50px">{{Lang::get('lang.type')}}</th>
+                <th width="50px">{{Lang::get('lang.department')}}</th>
+                <th width="80px">{{Lang::get('lang.last_updated')}}</th>
                 <th width="100px">{{Lang::get('lang.action')}}</th>
             </tr>
             <?php
@@ -69,7 +68,7 @@ class="active"
             @foreach($topics as $topic)
             <tr style="padding-bottom:-30px">
                 <!-- topic Name with Link to Edit page along Id -->
-                <td><a href="{{route('helptopic.edit',$topic->id)}}">{!! $topic->topic !!}
+                <td><a href="{{route('helptopic.edit',$topic->id)}}">{!! $topic->desc() !!}
                         @if($topic->id == $default_helptopic)
                         ( Default )
                         <?php
@@ -100,9 +99,6 @@ class="active"
                     <span style="color:red">{!! Lang::get('lang.private') !!}</span>
                     @endif
                 </td>
-                <!-- Priority -->
-                <?php $priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('priority_id', '=', $topic->priority)->first(); ?>
-                <td>{!! $priority->priority_desc !!}</td>
                 <!-- Department -->
                 @if($topic->department != null)
                 <?php
@@ -118,7 +114,7 @@ class="active"
                 <!-- Deleting Fields -->
                 <td>
                     {!! Form::open(['route'=>['helptopic.destroy', $topic->id],'method'=>'DELETE']) !!}
-                    <a href="{{route('helptopic.edit',$topic->id)}}" class="btn btn-info btn-xs btn-flat"><i class="fa fa-trash" style="color:black;"> </i> {!! Lang::get('lang.edit') !!}</a>
+                    <a href="{{route('helptopic.edit',$topic->id)}}" class="btn btn-info btn-xs btn-flat"><i class="fa fa-edit" style="color:black;"> </i> {!! Lang::get('lang.edit') !!}</a>
                     <!-- To pop up a confirm Message -->
                     {!! Form::button('<i class="fa fa-trash" style="color:black;"> </i> '.Lang::get('lang.delete'),
                     ['type' => 'submit',

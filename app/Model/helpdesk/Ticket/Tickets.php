@@ -35,7 +35,11 @@ class Tickets extends BaseModel
 {
     public const TYPES = ['question', 'issue', 'feature'];
     protected $table = 'tickets';
-    protected $fillable = ['id', 'ticket_number', 'num_sequence', 'user_id', 'priority_id', 'sla', 'help_topic_id', 'max_open_ticket', 'captcha', 'status', 'lock_by', 'lock_at', 'source', 'isoverdue', 'reopened', 'isanswered', 'is_deleted', 'closed', 'is_transfer', 'transfer_at', 'reopened_at', 'duedate', 'closed_at', 'last_message_at', 'last_response_at', 'created_at', 'updated_at', 'assigned_to', 'type_id'];
+    protected $fillable = [
+        'id', 'ticket_number', 'num_sequence', 'user_id', 'priority_id', 'sla', 'help_topic_id', 'max_open_ticket',
+        'captcha', 'status', 'lock_by', 'lock_at', 'source', 'isoverdue', 'reopened', 'isanswered', 'is_deleted',
+        'closed', 'is_transfer', 'transfer_at', 'reopened_at', 'duedate', 'closed_at', 'last_message_at',
+        'last_response_at', 'created_at', 'updated_at', 'assigned_to', 'type_id'];
 
 //        public function attach(){
 //            return $this->hasMany('App\Model\helpdesk\Ticket\Ticket_attachments',);
@@ -53,10 +57,7 @@ class Tickets extends BaseModel
 
     public function helptopic()
     {
-        $related = Help_topic::class;
-        $foreignKey = 'help_topic_id';
-
-        return $this->belongsTo($related, $foreignKey);
+        return $this->belongsTo(Help_topic::class, 'help_topic_id');
     }
 
     public function formdata()
@@ -175,7 +176,7 @@ class Tickets extends BaseModel
         $body      = $thread ? $thread->body : '';
 
         $helptopic = $this->helptopic;
-        $topics    = implode(' > ', [$helptopic->parent_topic, $helptopic->topic]);
+        $topics    = implode(' > ', [$helptopic->parentName(), $helptopic->topic]);
 
         $sla       = $this->sla();
         $sla       = $sla ? $sla->grace_period : '-';

@@ -113,7 +113,7 @@ class="active"
                                             <!-- <tr><th></th><th></th></tr> -->
                                             <tr><td><b>Status:</b></td>       <?php $status = App\Model\Ticket\Ticket_Status::where('id','=',$tickets->status)->first();?><td title="{{$status->properties}}">{{$status->state}}</td></tr>
                                             <tr><td><b>Priority:</b></td>     <?php $priority = App\Model\Ticket\Ticket_Priority::where('priority_id','=',$tickets->priority_id)->first();?><td title="{{$priority->priority_desc}}">{{$priority->priority}}</td></tr>
-                                            <tr><td><b>Department:</b></td>   <?php $help_topic = App\Model\Manage\Help_topic::where('id','=',$tickets->help_topic_id)->first();?><td title="{{$help_topic->topic}}">{{$help_topic->department}}</td></tr>                                            
+                                            <tr><td><b>Department:</b></td>   <?php $help_topic = App\Model\Manage\Help_topic::where('id','=',$tickets->help_topic_id)->first();?><td title="{{$help_topic->desc()}}">{{$help_topic->department}}</td></tr>
                                             
                                         </table>
                                         <!-- </div> -->
@@ -122,7 +122,7 @@ class="active"
                                         <!-- <div class="callout callout-success"> -->
                                         <table class="table table-hover">
                                             <!-- <tr><th></th><th></th></tr> -->
-                                            <tr><td><b>Help Topic:</b></td>     <?php $help_topic = App\Model\Manage\Help_topic::where('id','=',$tickets->help_topic_id)->first();?><td title="{{$help_topic->topic}}">{{$help_topic->topic}}</td></tr>
+                                            <tr><td><b>Help Topic:</b></td>     <?php $help_topic = App\Model\Manage\Help_topic::where('id','=',$tickets->help_topic_id)->first();?><td title="{{$help_topic->desc()}}">{{$help_topic->desc()}}</td></tr>
                                             <tr><td><b>Last Message:</b></td>   <td>{{$last->poster}}</td></tr>
                                         </table>
                                     </div>

@@ -149,9 +149,10 @@ class = "active"
  
            @endif
             <?php
-            $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '=', '')->get();
-            $subtopics = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '!=', '')->get();
-            $topic_by_name = $helptopic->map(function($a){return [$a->id, $a->topic];})->reduce(function($a,$v){$a[$v[1]] = $v[0]; return $a;}, []);
+//            $helptopic = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '=', '')->get();
+            $helptopic = App\Model\helpdesk\Manage\Help_topic::query()->where('status', '=', 1)->get();
+//            $subtopics = App\Model\helpdesk\Manage\Help_topic::where('status', '=', 1)->where('parent_topic', '!=', '')->get();
+//            $topic_by_name = $helptopic->map(function($a){return [$a->id, $a->topic];})->reduce(function($a,$v){$a[$v[1]] = $v[0]; return $a;}, []);
             ?>
             {!! Form::hidden('helptopic',null,['class' => 'form-control']) !!}
             <div class="col-md-12 form-group {{ $errors->has('help_topic') ? 'has-error' : '' }}">
@@ -159,20 +160,20 @@ class = "active"
                 {!! $errors->first('help_topic', '<spam class="help-block">:message</spam>') !!}
                 <select name="helptopic_par" class="form-control" id="selectid">
                     @foreach($helptopic as $topic)
-                    <option value="{!! $topic->id !!}">{!! $topic->topic !!}</option>
+                    <option value="{!! $topic->id !!}">{!! $topic->desc() !!}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-12 form-group {{ $errors->has('help_sub_topic') ? 'has-error' : '' }}">
-                {!! Form::label('help_sub_topic', Lang::get('lang.choose_a_help_sub_topic')) !!}
-                {!! $errors->first('help_sub_topic', '<spam class="help-block">:message</spam>') !!}
-                <select name="helptopic_sub" class="form-control" id="selectsubid">
-                    <option value="">-</option>
-                    @foreach($subtopics as $topic)
-                        <option data-parent="{!! $topic_by_name[$topic->parent_topic] !!}" class='subtopic-opt' value="{!! $topic->id !!}" style="display: none">{!! $topic->topic !!}</option>
-                    @endforeach
-                </select>
-            </div>
+{{--            <div class="col-md-12 form-group {{ $errors->has('help_sub_topic') ? 'has-error' : '' }}">--}}
+{{--                {!! Form::label('help_sub_topic', Lang::get('lang.choose_a_help_sub_topic')) !!}--}}
+{{--                {!! $errors->first('help_sub_topic', '<spam class="help-block">:message</spam>') !!}--}}
+{{--                <select name="helptopic_sub" class="form-control" id="selectsubid">--}}
+{{--                    <option value="">-</option>--}}
+{{--                    @foreach($subtopics as $topic)--}}
+{{--                        <option data-parent="{!! $topic_by_name[$topic->parent_topic] !!}" class='subtopic-opt' value="{!! $topic->id !!}" style="display: none">{!! $topic->topic !!}</option>--}}
+{{--                    @endforeach--}}
+{{--                </select>--}}
+{{--            </div>--}}
             <!-- priority -->
              <?php 
              $Priority = App\Model\helpdesk\Settings\CommonSettings::select('status')->where('option_name','=', 'user_priority')->first();

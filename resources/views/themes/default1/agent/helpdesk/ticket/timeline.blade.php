@@ -20,6 +20,7 @@ $group = App\Model\helpdesk\Agent\Groups::where('id', '=', $agent_group)->where(
 $supportLevel = $tickets->supportLevel;
 $supportLevelName = $supportLevel ? $supportLevel->name : '';
 $supportLevelID = $supportLevel ? $supportLevel->id : '';
+$help_topic = App\Model\helpdesk\Manage\Help_topic::where('id', '=', $tickets->help_topic_id)->first();
 ?>
 
 @section('sidebar')
@@ -304,8 +305,7 @@ if ($thread->title != "") {
                                 @if($user->mobile !=null)<tr><td><b>{!! Lang::get('lang.mobile') !!}:</b></td>          <td>{{$user->ext . $user->mobile}}</td></tr>@endif
                                 <tr><td><b>{!! Lang::get('lang.source') !!}:</b></td>         <td>{{$ticket_source}}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.help_topic') !!}:</b></td>
-                                    <?php $help_topic = App\Model\helpdesk\Manage\Help_topic::where('id', '=', $tickets->help_topic_id)->first(); ?>
-                                    <td title="{{$help_topic->desc()}}">{{$help_topic->desc()}}</td></tr>
+                                    <td title="{{$tickets->helptopic->desc()}}">{{$tickets->helptopic->desc()}}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.last_message') !!}:</b></td>   <td>{{str_limit($username,30)}}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.organization') !!}:</b></td>   <td>{!!$LastResponse->getOrgWithLink()!!}</td></tr>
                                 <tr><td><b>{!! Lang::get('lang.support_level') !!}:</b></td>   <td>{!! $supportLevelName !!}</td></tr>

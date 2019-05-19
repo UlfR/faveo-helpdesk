@@ -5,7 +5,7 @@
         Lang::get('lang.department')=>$dept123->name,
         Lang::get('lang.email')=>str_limit($user->email,30),
         Lang::get('lang.source')=>$ticket_source,
-        Lang::get('lang.help_topic')=>$help_topic->topic,
+        Lang::get('lang.help_topic')=>$help_topic->desc(),
         Lang::get('lang.last_message')=>str_limit($username,30),
         Lang::get('lang.organization') => $LastResponse->getOrgWithLink(),   
     ];
