@@ -18,30 +18,30 @@ class = "active"
 @stop
 <!-- /breadcrumbs -->
 @section('check')
-<div class="banner-wrapper  clearfix">
-    <h3 class="banner-title text-center text-info h4">{!! Lang::get('lang.have_a_ticket') !!}?</h3>
-    @if(Session::has('check'))
-    @if (count($errors) > 0)
-    <div class="alert alert-danger alert-dismissable">
-        <i class="fa fa-ban"></i>
-        <b>{!! Lang::get('lang.alert') !!} !</b>
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </div>
-    @endif
-    @endif
-    <div class="banner-content text-center">
-        {!! Form::open(['url' => 'checkmyticket' , 'method' => 'POST'] )!!}
-        {!! Form::label('email',Lang::get('lang.email')) !!}<span class="text-red"> *</span>
-        {!! Form::text('email_address',null,['class' => 'form-control']) !!}
-        {!! Form::label('ticket_number',Lang::get('lang.ticket_number')) !!}<span class="text-red"> *</span>
-        {!! Form::text('ticket_number',null,['class' => 'form-control']) !!}
-        <br/><input type="submit" value="{!! Lang::get('lang.check_ticket_status') !!}" class="btn btn-info">
-        {!! Form::close() !!}
-    </div>
-</div>  
+{{--<div class="banner-wrapper  clearfix">--}}
+{{--    <h3 class="banner-title text-center text-info h4">{!! Lang::get('lang.have_a_ticket') !!}?</h3>--}}
+{{--    @if(Session::has('check'))--}}
+{{--    @if (count($errors) > 0)--}}
+{{--    <div class="alert alert-danger alert-dismissable">--}}
+{{--        <i class="fa fa-ban"></i>--}}
+{{--        <b>{!! Lang::get('lang.alert') !!} !</b>--}}
+{{--        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>--}}
+{{--        @foreach ($errors->all() as $error)--}}
+{{--        <li>{{ $error }}</li>--}}
+{{--        @endforeach--}}
+{{--    </div>--}}
+{{--    @endif--}}
+{{--    @endif--}}
+{{--    <div class="banner-content text-center">--}}
+{{--        {!! Form::open(['url' => 'checkmyticket' , 'method' => 'POST'] )!!}--}}
+{{--        {!! Form::label('email',Lang::get('lang.email')) !!}<span class="text-red"> *</span>--}}
+{{--        {!! Form::text('email_address',null,['class' => 'form-control']) !!}--}}
+{{--        {!! Form::label('ticket_number',Lang::get('lang.ticket_number')) !!}<span class="text-red"> *</span>--}}
+{{--        {!! Form::text('ticket_number',null,['class' => 'form-control']) !!}--}}
+{{--        <br/><input type="submit" value="{!! Lang::get('lang.check_ticket_status') !!}" class="btn btn-info">--}}
+{{--        {!! Form::close() !!}--}}
+{{--    </div>--}}
+{{--</div>  --}}
 @stop
 <!-- content -->
 @section('content')
@@ -156,7 +156,7 @@ class = "active"
             ?>
             {!! Form::hidden('helptopic',null,['class' => 'form-control']) !!}
             <div class="col-md-12 form-group {{ $errors->has('help_topic') ? 'has-error' : '' }}">
-                {!! Form::label('help_topic', Lang::get('lang.choose_a_help_topic')) !!} 
+                {!! Form::label('help_topic', Lang::get('lang.choose_a_help_topic')) !!}
                 {!! $errors->first('help_topic', '<spam class="help-block">:message</spam>') !!}
                 <select name="helptopic_par" class="form-control" id="selectid">
                     @foreach($helptopic as $topic_id => $topic_name)
