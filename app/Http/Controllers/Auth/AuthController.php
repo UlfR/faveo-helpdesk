@@ -123,6 +123,7 @@ class AuthController extends Controller
      */
     public function getRegister(CommonSettings $settings)
     {
+        die();
         // Event for login
         $settings = $settings->select('status')->where('option_name', '=', 'send_otp')->first();
         $email_mandatory = $settings->select('status')->where('option_name', '=', 'email_mandatory')->first();

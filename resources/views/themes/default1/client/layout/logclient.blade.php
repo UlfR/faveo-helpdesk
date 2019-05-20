@@ -257,69 +257,6 @@
                     <hr style="color:#E5E5E5"/>
                     <div class="row">
                         <div class="site-info col-md-6">
-                            <p class="text-muted">{!! Lang::get('lang.copyright') !!} &copy; {!! date('Y') !!}  <a href="{!! $company->website !!}" target="_blank">{!! $company->company_name !!}</a>. {!! Lang::get('lang.all_rights_reserved') !!}. {!! Lang::get('lang.powered_by') !!} <a href="http://www.faveohelpdesk.com/"  target="_blank">Faveo</a></p>
-                        </div>
-                        <div class="site-social text-right col-md-6">
-<?php $socials = App\Model\helpdesk\Theme\Widgets::all(); ?>
-                            <ul class="list-inline hidden-print">
-                                @foreach($socials as $social)
-                                @if($social->name == 'facebook')
-                                @if($social->value)
-                                <li><a href="{!! $social->value !!}" class="btn btn-social btn-facebook" target="_blank"><i class="fa fa-facebook fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "twitter")
-                                @if($social->value)
-                                <li><a href="{{ $social->value }}" class="btn btn-social btn-twitter" target="_blank"><i class="fa fa-twitter fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "google")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-google-plus" target="_blank"><i class="fa fa-google-plus fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "linkedin")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-linkedin" target="_blank"><i class="fa fa-linkedin fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "vimeo")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-vimeo" target="_blank"><i class="fa fa-vimeo-square fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "youtube")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-youtube" target="_blank"><i class="fa fa-youtube-play fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "pinterest")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-pinterest" target="_blank"><i class="fa fa-pinterest fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "dribbble")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-dribbble" target="_blank"><i class="fa fa-dribbble fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "flickr")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-flickr" target="_blank"><i class="fa fa-flickr fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "instagram")
-                                @if($social->value)
-                                <li><a href="{{$social->value }}" class="btn btn-social btn-instagram" target="_blank"><i class="fa fa-instagram fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @if($social->name == "rss")
-                                @if($social->value)
-                                <li><a href="{{$social->value}}" class="btn btn-social btn-rss" target="_blank"><i class="fa fa-rss fa-fw"></i></a></li>
-                                @endif
-                                @endif
-                                @endforeach
-                            </ul>
                         </div>
                     </div>
             </footer><!-- #colophon -->

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\helpdesk\Ticket\Tickets;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class HomeController extends Controller
 {
@@ -24,7 +25,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+         $this->middleware('auth');
     }
 
     /**

@@ -72,9 +72,9 @@
         <div class="widgetrow text-center">
         @if(Auth::user())
         @else
-            <span onclick="javascript: window.location.href='{{url('auth/register')}}';">
-                <a href="{{url('auth/register')}}"  style="background-image:url({{ URL::asset('lb-faveo/media/images/register.png') }})">
-                    <span class="widgetitemtitle">{!! Lang::get('lang.register') !!}</span>
+            <span onclick="javascript: window.location.href='{{url('auth/login')}}';">
+                <a href="{{url('auth/login')}}"  style="background-image:url({{ URL::asset('lb-faveo/media/images/register.png') }})">
+                    <span class="widgetitemtitle">{!! Lang::get('lang.login') !!}</span>
                 </a>
             </span>
         @endif
@@ -170,15 +170,6 @@
 <a href="{{url('password/email')}}">{!! Lang::get("lang.iforgot") !!}</a><br> 
 
 </div>
- <div class="col-xs-2">
- 
-<a href="{{url('auth/register')}}" class="text-center">{!! Lang::get("lang.register") !!}</a>
-
-
-</div>
-            <div class="col-md-12">
-                @include('themes.default1.client.layout.social-login')
-            </div>
 
 <!-- /.login-page -->
   </div><!-- /.col -->

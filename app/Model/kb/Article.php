@@ -46,6 +46,7 @@ class Article extends BaseModel
      */
     public function isVisibleForUser($user)
     {
+        if (!$user) return false;
         if ($user->role == 'admin') {return true;}
         return $this->isVisible($user->orgIDs(), $user->depIDs(), $user->teamIDs());
     }

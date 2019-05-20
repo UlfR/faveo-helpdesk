@@ -49,9 +49,9 @@
         <div class="widgetrow text-center">
         @if(Auth::user())
         @else
-            <span onclick="javascript: window.location.href='{{url('auth/register')}}';">
-                <a href="{{url('auth/register')}}"  style="background-image:url({{ URL::asset('lb-faveo/media/images/register.png') }})">
-                    <span class="widgetitemtitle">{!! Lang::get('lang.register') !!}</span>
+            <span onclick="javascript: window.location.href='{{url('auth/login')}}';">
+                <a href="{{url('auth/login')}}"  style="background-image:url({{ URL::asset('lb-faveo/media/images/register.png') }})">
+                    <span class="widgetitemtitle">{!! Lang::get('lang.login') !!}</span>
                 </a>
             </span>
         @endif

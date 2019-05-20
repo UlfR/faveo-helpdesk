@@ -46,6 +46,7 @@ class FormController extends Controller
     public function __construct(TicketWorkflowController $TicketWorkflowController)
     {
         $this->middleware('board');
+        $this->middleware('auth');
         // creating a TicketController instance
         $this->TicketWorkflowController = $TicketWorkflowController;
     }
