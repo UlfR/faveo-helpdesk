@@ -126,21 +126,25 @@ $thread = App\Model\helpdesk\Ticket\Ticket_Thread::where('ticket_id', '=', \Cryp
                         <tr><td><b>{!! Lang::get('lang.status') !!}:</b></td>       <?php $status = App\Model\helpdesk\Ticket\Ticket_Status::where('id', '=', $tickets->status)->first(); ?>
 
                             @if($status->id == 1)
-                            <td title="{{$status->properties}}" style="color:orange">{{$status->name}}</td></tr>
+                            <td title="{{$status->properties}}" style="color:orange">{{__("lang.{$status->name}")}}</td></tr>
                         @elseif($status->id == 2)
-                        <td title="{{$status->properties}}" style="color:green">{{$status->name}}</td></tr>
+                        <td title="{{$status->properties}}" style="color:green">{{__("lang.{$status->name}")}}</td></tr>
                         @elseif($status->id == 3)
-                        <td title="{{$status->properties}}" style="color:green">{{$status->name}}</td></tr>
+                        <td title="{{$status->properties}}" style="color:green">{{__("lang.{$status->name}")}}</td></tr>
+                        @else
+                            <td title="{{$status->properties}}">{{__("lang.{$status->name}")}}</td></tr>
                         @endif
 
                         <tr><td><b>{!! Lang::get('lang.priority') !!}:</b></td>     <?php $priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('priority_id', '=', $tickets->priority_id)->first(); ?>
 
                             @if($priority->priority_id == 1)
-                            <td title="{{$priority->priority_desc}}" style="color:green">{{$priority->priority_desc}}</td>
+                            <td title="{{$priority->priority_desc}}" style="color:green">{{__("lang.{$priority->priority_desc}")}}</td>
                             @elseif($priority->priority_id == 2)
-                            <td title="{{$priority->priority_desc}}" style="color:orange">{{$priority->priority_desc}}</td>
+                            <td title="{{$priority->priority_desc}}" style="color:orange">{{__("lang.{$priority->priority_desc}")}}</td>
                             @elseif($priority->priority_id == 3)
-                            <td title="{{$priority->priority_desc}}" style="color:red">{{$priority->priority_desc}}</td>
+                            <td title="{{$priority->priority_desc}}" style="color:red">{{__("lang.{$priority->priority_desc}")}}</td>
+                            @else
+                                <td title="{{$priority->priority_desc}}">{{__("lang.{$priority->priority_desc}")}}</td>
                             @endif
 
                         </tr>
@@ -151,7 +155,7 @@ $thread = App\Model\helpdesk\Ticket\Ticket_Thread::where('ticket_id', '=', \Cryp
                             ?>
                             <td title="{{ $department->name }}">{!! $department->name !!}</td></tr>
                         <tr><td><b>{!! Lang::get('lang.type') !!}:</b></td>
-                            <td title="{{ $tickets->type() }}">{!! $tickets->type() !!}</td></tr>
+                            <td title="{{ $tickets->type() }}">{!! __("lang.{$tickets->type()}") !!}</td></tr>
                     </table>
                     <!-- </div> -->
                 </div>

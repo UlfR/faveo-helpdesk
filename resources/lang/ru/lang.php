@@ -1050,4 +1050,22 @@ return array(
     'is_non_visible_for_orgs' => 'Запрещенные организации',
     'is_non_visible_for_deps' => 'Запрещенные модули',
     'is_non_visible_for_teams' => 'Запрещенные команды',
+
+    'Priority' => 'Приоритет',
+    'Normal' => 'Нормальный',
+    'Low' => 'Низкий',
+    'High' => 'Высокий',
+    'Emergency' => 'Критический',
+
+    'Type' => 'Тип запроса',
+    'question' => 'Консультация',
+    'issue' => 'Ошибка',
+    'feature' => 'Запрос на изменение',
+
+    'Open' => 'Открыт',
+    'Resolved' => 'Решен',
+    'Closed' => 'Закрыт',
+    'Archived' => 'В архиве',
+    'Unverified' => 'Не проверен',
+    'Request Approval' => 'Запрос на утверждение',
 );

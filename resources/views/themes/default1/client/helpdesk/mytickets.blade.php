@@ -101,12 +101,14 @@ class="active"
                                 <td class="mailbox-name"><a href="{!! URL('check_ticket',[Crypt::encrypt($ticket->id)]) !!}" title="{!! $title->title !!}">{{$string}}   </a> ({!! $count!!}) <i class="fa fa-comment"></i></td>
                                 <td class="mailbox-Id">#{!! $ticket->ticket_number !!}</td>
                                 <?php $priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('priority_id', '=', $ticket->priority_id)->first(); ?>
-                                <td class="mailbox-priority"><spam class="btn btn-{{$priority->priority_color}} btn-xs">{{$priority->priority}}</spam></td>
+                                <td class="mailbox-priority"><spam class="btn btn-{{$priority->priority_color}} btn-xs">
+                                        {{__("lang.{$priority->priority_desc}")}}
+                                    </spam></td>
 
                         <td class="mailbox-last-reply" style="color: {!! $rep !!}">{!! $username !!}</td>
                         <td class="mailbox-last-activity">{!! $title->updated_at !!}</td>
                         <?php $status = App\Model\helpdesk\Ticket\Ticket_Status::where('id', '=', $ticket->status)->first(); ?>
-                        <td class="mailbox-date">{!! $status->name !!}</td>
+                        <td class="mailbox-date">{{__("lang.{$status->name}")}}</td>
                         </tr>
                         @endforeach
                         </tbody>

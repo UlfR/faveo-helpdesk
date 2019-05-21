@@ -233,4 +233,7 @@ ZZZ;
     {
     }
 
+    public static function typesTranslated() {
+        return ['question' => __('lang.question'), 'issue' => __('lang.issue'), 'feature' => __('lang.feature')];
+    }
 }

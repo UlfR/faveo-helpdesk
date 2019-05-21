@@ -90,24 +90,16 @@ class = "active"
             <h4>{!! Lang::get('lang.ticket') !!} </h4>
         </div>
         <div class="row col-md-12">
-            
                 @if(Auth::user())
-                    
                         {!! Form::hidden('Name',Auth::user()->user_name,['class' => 'form-control']) !!}
-                    
                 @else
                     <div class="col-md-12 form-group {{ $errors->has('Name') ? 'has-error' : '' }}">
                         {!! Form::label('Name',Lang::get('lang.name')) !!}<span class="text-red"> *</span>
                         {!! Form::text('Name',null,['class' => 'form-control']) !!}
                     </div>
                 @endif
-            
-            
-
                 @if(Auth::user())
-                    
                         {!! Form::hidden('Email',Auth::user()->email,['class' => 'form-control']) !!}
-                    
                 @else
                     <div class="col-md-12 form-group {{ $errors->has('Email') ? 'has-error' : '' }}">
                         {!! Form::label('Email',Lang::get('lang.email')) !!}
@@ -117,12 +109,7 @@ class = "active"
                         {!! Form::email('Email',null,['class' => 'form-control']) !!}
                     </div>
                 @endif
-
-
-                
-            
                 @if(!Auth::user())
-                    
             <div class="col-md-2 form-group {{ Session::has('country_code_error') ? 'has-error' : '' }}">
                 {!! Form::label('Code',Lang::get('lang.country-code')) !!}
                  @if($email_mandatory->status == 0 || $email_mandatory->status == '0')
@@ -181,19 +168,19 @@ class = "active"
             ?>
              
              @if(Auth::user())
-
              @if(Auth::user()->active == 1)
             @if($user_Priority == 1)
-             
-
              <div class="col-md-12 form-group">
                 <div class="row">
                     <div class="col-md-1">
                         <label>{!! Lang::get('lang.priority') !!}:</label>
                     </div>
                     <div class="col-md-12">
-                        <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get();?>
-                        {!! Form::select('priority', ['Priority'=>$Priority->pluck('priority_desc','priority_id')->toArray()],null,['class' => 'form-control select']) !!}
+                        <?php
+                            $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get();
+                            $priorities = $Priority->pluck('priority_desc','priority_id')->map(function($e){return __("lang.{$e}");})->toArray();
+                        ?>
+                        {!! Form::select('priority', [ __('lang.Priority') => $priorities],null,[ 'class' => 'form-control select' ]) !!}
                     </div>
                  </div>
             </div>
@@ -207,7 +194,7 @@ class = "active"
                         <label>{!! Lang::get('lang.type') !!}:</label>
                     </div>
                     <div class="col-md-12">
-                        {!! Form::select('type_id', ['Type'=>App\Model\helpdesk\Ticket\Tickets::TYPES],null,['class' => 'form-control select']) !!}
+                        {!! Form::select('type_id', [__('lang.Type') => App\Model\helpdesk\Ticket\Tickets::typesTranslated()], null, ['class' => 'form-control select']) !!}
                     </div>
                 </div>
             </div>
