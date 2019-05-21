@@ -6,6 +6,7 @@ use App\User;
 /**
  * @property mixed id
  * @property mixed parent
+ * @property mixed name
  */
 class Category extends BaseModel
 {
@@ -32,5 +33,19 @@ class Category extends BaseModel
         if (!$user) return false;
         if ($user->role == 'admin') {return true;}
         return $this->isVisible($user->orgIDs(), $user->depIDs(), $user->teamIDs());
+    }
+
+    public function desc() {
+        if (!empty($this->parentCategory)) {
+            return "{$this->parentCategory->name} > {$this->name}";
+        } else {
+            return $this->name;
+        }
+    }
+
+    public function parentCategory()
+    {
+//        return self::query()->where('topic', '=', $this->parent_topic)->first();
+        return $this->belongsTo(__CLASS__, 'parent');
     }
 }

@@ -81,9 +81,9 @@ class CategoryController extends Controller
                         ->orderColumns('name', 'description')
                         /* add column name */
                         ->addColumn('name', function ($model) {
-                            $string = strip_tags($model->name);
+                            $string = strip_tags($model->desc());
 
-                            return str_limit($string, 20);
+                            return str_limit($string, 50);
                         })
                         /* add column Created */
                         ->addColumn('Created', function ($model) {
