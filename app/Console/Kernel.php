@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\Install::class,
         \App\Console\Commands\InstallDB::class,
         \App\Console\Commands\SetupTestEnv::class,
+        \App\Console\Commands\ImportLdap::class,
     ];
 
     /**
@@ -51,6 +52,7 @@ class Kernel extends ConsoleKernel
         switch ($task) {
             case 'fetching':
                 $this->getCondition($schedule->command('ticket:fetch'), $command);
+                $this->getCondition($schedule->command('ldap:importar --no-interaction'), $command);
                 break;
             case 'notification':
                 $this->getCondition($schedule->command('report:send'), $command);

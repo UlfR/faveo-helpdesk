@@ -90,7 +90,6 @@ Create your own fork of Faveo master repositoray and use <a href="https://github
 
 Error Reporting
 --------------------------
-Faveo uses [Bugsnag](https://www.bugsnag.com/) to monitor application stability in production enviroment. It helps us to provide bug fixes and feature updates after analyzing the logs and crash reports for the application. **If you are customizing the application under development environment, we request you to disable this error reporting.** It will allow us to ignore the errors occurred during your development cycle and we can focus more on the exceptions/bugs occuring in live system of other users of Faveo community. It can be easily disabled from "Error logs and debugging" option in admin panel or by updating your app environment to development in `.env`.
 
 You can still report the issues on our [Github Issue page](https://github.com/ladybirdweb/faveo-helpdesk/issues) by providing proper information about the changes you are trying to implement. We assure you that Faveo community will help you and your customization can be a part of Faveo application if it follows our contributing guidelines.
 

@@ -39,9 +39,8 @@ class ErrorAndDebuggingController extends Controller
     public function showSettings()
     {
         $debug = \Config::get('app.debug');
-        $bugsnag = \Config::get('app.bugsnag_reporting');
 
-        return view('themes.default1.admin.helpdesk.settings.error-and-logs.error-debug')->with(['debug' => $debug, 'bugsnag' => $bugsnag]);
+        return view('themes.default1.admin.helpdesk.settings.error-and-logs.error-debug')->with(['debug' => $debug]);
     }
 
     /**
@@ -56,9 +55,7 @@ class ErrorAndDebuggingController extends Controller
         try {
             $debug = \Config::get('app.debug');
             $debug = ($debug) ? 'true' : 'false';
-            $bugsnag_debug = \Config::get('app.bugsnag_reporting');
-            $bugsnag_debug = ($bugsnag_debug) ? 'true' : 'false';
-            if ($debug != \Input::get('debug') || $bugsnag_debug != \Input::get('bugsnag')) {
+            if ($debug != \Input::get('debug')) {
                 // dd($request->input());
                 $debug_new = base_path().DIRECTORY_SEPARATOR.'.env';
                 $datacontent = File::get($debug_new);
@@ -68,13 +65,6 @@ class ErrorAndDebuggingController extends Controller
                 File::put($debug_new, $datacontent);
 
                 // dd($request->input());
-                $bugsnag_debug_new = base_path().DIRECTORY_SEPARATOR.'.env';
-                $datacontent2 = File::get($bugsnag_debug_new);
-                $datacontent2 = str_replace('APP_BUGSNAG='.$bugsnag_debug,
-                                           'APP_BUGSNAG='.\Input::get('bugsnag'),
-                                            $datacontent2);
-                File::put($bugsnag_debug_new, $datacontent2);
-
                 return redirect()->back()->with('success',
                     Lang::get('lang.error-debug-settings-saved-message'));
             } else {

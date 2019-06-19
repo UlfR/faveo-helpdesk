@@ -22,6 +22,4 @@ return array(
     'Diff' => array($vendorDir . '/phpspec/php-diff/lib'),
     'Davibennun\\LaravelPushNotification' => array($vendorDir . '/davibennun/laravel-push-notification/src'),
     'Chumper\\Datatable' => array($vendorDir . '/chumper/datatable/src'),
-    'Bugsnag_' => array($vendorDir . '/bugsnag/bugsnag/src'),
-    'Bugsnag\\BugsnagLaravel\\' => array($vendorDir . '/bugsnag/bugsnag-laravel/src'),
 );

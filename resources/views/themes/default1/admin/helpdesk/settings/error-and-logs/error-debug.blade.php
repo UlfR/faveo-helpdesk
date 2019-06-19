@@ -66,15 +66,6 @@ class="active"
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    {!! Form::label('bugsnag',Lang::get('lang.bugsnag-debugging')) !!}
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <input type="radio" name="bugsnag" value="true" @if($bugsnag == true) checked="true" @endif> {{Lang::get('lang.yes')}}
-                        </div>
-                        <div class="col-xs-3">
-                            <input type="radio" name="bugsnag" value="false" @if($bugsnag == false) checked="true" @endif> {{Lang::get('lang.no')}}
-                        </div>
-                    </div>
                 </div> 
             </div>
         </div>

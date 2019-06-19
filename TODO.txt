@@ -36,9 +36,7 @@ ALTER TABLE `users` ADD `telegram` VARCHAR(20) NULL DEFAULT NULL AFTER `user_lan
 
 check ticket create/response from email
 full translate
-
 sms for agents on tickets
 simplify user select on agent ticket create
 articles visibility by org/dep/team
 remove deps, orgs and teams with user remove, agent remove
-sdfsd

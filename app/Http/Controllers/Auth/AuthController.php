@@ -25,6 +25,8 @@ use Hash;
 use Illuminate\Http\Request;
 use Lang;
 use Socialite;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Adldap;
 
 /**
  * ---------------------------------------------------
@@ -38,6 +40,7 @@ use Socialite;
  */
 class AuthController extends Controller
 {
+    use AuthenticatesAndRegistersUsers;
     /* to redirect after login */
 
     // if auth is agent
@@ -52,7 +55,7 @@ class AuthController extends Controller
     /**
      * Create a new authentication controller instance.
      *
-     * @param \Illuminate\Contracts\Auth\Guard     $auth
+     * @param \Illuminate\Contracts\Auth\Guard $auth
      * @param \Illuminate\Contracts\Auth\Registrar $registrar
      *
      * @return void
@@ -95,10 +98,10 @@ class AuthController extends Controller
                 }
                 $data = [
                     'first_name' => $first_name,
-                    'email'      => $user->getEmail(),
-                    'user_name'  => $username,
-                    'role'       => 'user',
-                    'active'     => 1,
+                    'email' => $user->getEmail(),
+                    'user_name' => $username,
+                    'role' => 'user',
+                    'active' => 1,
                 ];
                 $user = User::where('email', $data['email'])->first();
                 if (!$user) {
@@ -187,7 +190,7 @@ class AuthController extends Controller
             // Event for login
             \Event::fire(new \App\Events\LoginEvent($request));
             if ($request->input('email') !== '') {
-                $var = $this->PhpMailController->sendmail($from = $this->PhpMailController->mailfrom('1', '0'), $to = ['name' => $name, 'email' => $request->input('email')], $message = ['subject' => null, 'scenario' => 'registration'], $template_variables = ['user' => $name, 'email_address' => $request->input('email'), 'password_reset_link' => url('account/activate/'.$code)]);
+                $var = $this->PhpMailController->sendmail($from = $this->PhpMailController->mailfrom('1', '0'), $to = ['name' => $name, 'email' => $request->input('email')], $message = ['subject' => null, 'scenario' => 'registration'], $template_variables = ['user' => $name, 'email_address' => $request->input('email'), 'password_reset_link' => url('account/activate/' . $code)]);
             }
             if ($settings->status == 1 || $settings->status == '1') {
                 if (count($sms) > 0) {
@@ -245,7 +248,7 @@ class AuthController extends Controller
     /**
      * Get mail function.
      *
-     * @param type      $token
+     * @param type $token
      * @param type User $user
      *
      * @return type Response
@@ -271,7 +274,7 @@ class AuthController extends Controller
     public function getLogin()
     {
         $directory = base_path();
-        if (file_exists($directory.DIRECTORY_SEPARATOR.'.env')) {
+        if (file_exists($directory . DIRECTORY_SEPARATOR . '.env')) {
             if (Auth::user()) {
                 if (Auth::user()->role == 'admin' || Auth::user()->role == 'agent') {
                     return \Redirect::route('dashboard');
@@ -316,16 +319,85 @@ class AuthController extends Controller
                 return redirect()->back()->withErrors('email', 'Incorrect details')->with(['error' => $security->lockout_message, 'referer' => $referer]);
             }
 
+            if (env('LDAP_ENABLED', '0') == '1' && $request->input('email') != 'admin') {
+                $field = 'user_name';
+                print_r(Adldap::getProviders());
+                die();
+                if (Adldap::auth()->attempt($usernameinput, $password, $bindAsUser = true)) {
+                    // the user exists in the LDAP server, with the provided password
+                    $user = \App\User::where('user_name', $usernameinput)->first();
+                    $password = 'password';
+                    if (!$user) {
+                        // the user doesn't exist in the local database, so we have to create one
+                        $user = new \App\User();
+                        $user->user_name = $usernameinput;
+                        $user->password = Hash::make($password);
+                        $user->first_name = ucfirst($usernameinput);
+                        $user->email = null;
+                        $user->role = 'user';
+                        $code = str_random(60);
+                        $user->remember_token = $code;
+                        $user->active = 1;
+                        $user->is_delete = 0;
+                        $user->gender = 1;
+                        $user->profile_pic = '4925.cliente.png';
+                        $user->save();
+                    }
+
+                    // try login
+                    $loginAttempts = 1;
+                    // If session has login attempts, retrieve attempts counter and attempts time
+                    if (\Session::has('loginAttempts')) {
+                        $loginAttempts = \Session::get('loginAttempts');
+                        $loginAttemptTime = \Session::get('loginAttemptTime');
+                        $this->addLoginAttempt($value, $usernameinput);
+                        // If attempts > 3 and time < 10 minutes
+                        if ($loginAttempts > $security->backlist_threshold && (time() - $loginAttemptTime <= ($security->lockout_period * 60))) {
+                            return redirect()->back()->withErrors('email', 'incorrect email')->with('error', $security->lockout_message);
+                        }
+                        // If time > 10 minutes, reset attempts counter and time in session
+                        if (time() - $loginAttemptTime > ($security->lockout_period * 60)) {
+                            \Session::put('loginAttempts', 1);
+                            \Session::put('loginAttemptTime', time());
+                        }
+                    } else { // If no login attempts stored, init login attempts and time
+                        \Session::put('loginAttempts', $loginAttempts);
+                        \Session::put('loginAttemptTime', time());
+                        $this->clearLoginAttempts($value, $usernameinput);
+                    }
+                    // If auth ok, redirect to restricted area
+                    \Session::put('loginAttempts', $loginAttempts + 1);
+                    if (Auth::Attempt(['user_name' => $usernameinput, 'password' => $password, 'active' => 1], $request->has('remember'))) {
+                        if (Auth::user()->role == 'user') {
+                            if ($request->input('referer')) {
+                                return \Redirect::route($request->input('referer'));
+                            }
+                            return \Redirect::route('/');
+                        } else {
+                            return redirect()->intended($this->redirectPath());
+                        }
+                    }
+                }
+
+                return redirect()->back()
+                    ->withInput($request->only('email', 'remember'))
+                    ->withErrors([
+                        'email' => $this->getFailedLoginMessage(),
+                        'password' => $this->getFailedLoginMessage(),
+                    ])->with(['error' => Lang::get('lang.invalid'),
+                        'referer' => $referer,]);
+            }
+
             $check_active = User::where('email', '=', $request->input('email'))->orwhere('user_name', '=', $request->input('email'))->first();
             if (!$check_active) { //check if user exists or not
                 //if user deos not exist then return back with error that user is not registered
                 return redirect()->back()
-                                ->withInput($request->only('email', 'remember'))
-                                ->withErrors([
-                                    'email'         => $this->getFailedLoginMessage(),
-                                    'password'      => $this->getFailedLoginMessage(),
-                                ])->with(['error'   => Lang::get('lang.not-registered'),
-                            'referer'               => $referer, ]);
+                    ->withInput($request->only('email', 'remember'))
+                    ->withErrors([
+                        'email' => $this->getFailedLoginMessage(),
+                        'password' => $this->getFailedLoginMessage(),
+                    ])->with(['error' => Lang::get('lang.not-registered'),
+                        'referer' => $referer,]);
             }
 
             //if user exists
@@ -343,12 +415,12 @@ class AuthController extends Controller
                             if ($check_active->mobile) { //check user has mobile or not
                                 // user has mobile number return verify OTP screen
                                 return \Redirect::route('otp-verification')
-                                                ->withInput($request->input())
-                                                ->with(['values'  => $request->input(),
-                                                    'referer'     => $referer,
-                                                    'name'        => $check_active->first_name,
-                                                    'number'      => $check_active->mobile,
-                                                    'code'        => $check_active->country_code, ]);
+                                    ->withInput($request->input())
+                                    ->with(['values' => $request->input(),
+                                        'referer' => $referer,
+                                        'name' => $check_active->first_name,
+                                        'number' => $check_active->mobile,
+                                        'code' => $check_active->country_code,]);
                             } else {
                                 goto a; //attenmpt login  (be careful while using goto statements)
                             }
@@ -363,15 +435,16 @@ class AuthController extends Controller
                 }
             } else {
                 // setting is disabled
-                a: if (!$check_active->active) { //check account is active or not
+                a:
+                if (!$check_active->active) { //check account is active or not
                     // if accoutn is not active return back with error message that account is inactive
                     return redirect()->back()
-                                    ->withInput($request->only('email', 'remember'))
-                                    ->withErrors([
-                                        'email'         => $this->getFailedLoginMessage(),
-                                        'password'      => $this->getFailedLoginMessage(),
-                                    ])->with(['error'   => Lang::get('lang.this_account_is_currently_inactive'),
-                                'referer'               => $referer, ]);
+                        ->withInput($request->only('email', 'remember'))
+                        ->withErrors([
+                            'email' => $this->getFailedLoginMessage(),
+                            'password' => $this->getFailedLoginMessage(),
+                        ])->with(['error' => Lang::get('lang.this_account_is_currently_inactive'),
+                            'referer' => $referer,]);
                 } else {
                     // try login
                     $loginAttempts = 1;
@@ -415,12 +488,12 @@ class AuthController extends Controller
             }
 
             return redirect()->back()
-                            ->withInput($request->only('email', 'remember'))
-                            ->withErrors([
-                                'email'         => $this->getFailedLoginMessage(),
-                                'password'      => $this->getFailedLoginMessage(),
-                            ])->with(['error'   => Lang::get('lang.invalid'),
-                        'referer'               => $referer, ]);
+                ->withInput($request->only('email', 'remember'))
+                ->withErrors([
+                    'email' => $this->getFailedLoginMessage(),
+                    'password' => $this->getFailedLoginMessage(),
+                ])->with(['error' => Lang::get('lang.invalid'),
+                    'referer' => $referer,]);
             // Increment login attempts
         } catch (\Exception $e) {
             return redirect()->back()->with('fails', $e->getMessage());
@@ -482,8 +555,8 @@ class AuthController extends Controller
         $time = $security->lockout_period;
         $max_attempts = $security->backlist_threshold;
         $table = 'login_attempts';
-        $result = DB::select('SELECT Attempts, (CASE when LastLogin is not NULL and DATE_ADD(LastLogin, INTERVAL '.$time.' MINUTE)>NOW() then 1 else 0 end) as Denied '.
-                        ' FROM '.$table." WHERE IP = '$value' OR User = '$field'");
+        $result = DB::select('SELECT Attempts, (CASE when LastLogin is not NULL and DATE_ADD(LastLogin, INTERVAL ' . $time . ' MINUTE)>NOW() then 1 else 0 end) as Denied ' .
+            ' FROM ' . $table . " WHERE IP = '$value' OR User = '$field'");
         $data = $result;
         //Verify that at least one login attempt is in database
         if (!$data) {
@@ -513,11 +586,11 @@ class AuthController extends Controller
     }
 
     /**
-     * @category function to show verify OTP page
-     *
      * @param null
      *
      * @return response|view
+     * @category function to show verify OTP page
+     *
      */
     public function getVerifyOTP()
     {
@@ -529,22 +602,22 @@ class AuthController extends Controller
     }
 
     /**
-     * @category function to verify OTP
-     *
      * @param $request
      *
      * @return int|string
+     * @category function to verify OTP
+     *
      */
     public function verifyOTP(LoginRequest $request)
     {
         $user = User::select('id', 'mobile', 'user_name')->where('email', '=', $request->input('email'))
-                        ->orWhere('user_name', '=', $request->input('email'))->first();
+            ->orWhere('user_name', '=', $request->input('email'))->first();
         $otp_length = strlen($request->input('otp'));
         if (!\Schema::hasTable('user_verification')) {
             $message = Lang::get('lang.opt-can-not-be-verified');
         } else {
             $otp = Otp::select('otp', 'updated_at')->where('user_id', '=', $user->id)
-                    ->first();
+                ->first();
             if ($otp != null) {
                 if (($otp_length == 6 && !preg_match('/[a-z]/i', $request->input('otp')))) {
                     $otp2 = Hash::make($request->input('otp'));
@@ -558,9 +631,9 @@ class AuthController extends Controller
                     } else {
                         if (Hash::check($request->input('otp'), $otp->otp)) {
                             Otp::where('user_id', '=', $user->id)
-                                    ->update(['otp' => '']);
+                                ->update(['otp' => '']);
                             User::where('id', '=', $user->id)
-                                    ->update(['active' => 1]);
+                                ->update(['active' => 1]);
                             $this->openTicketAfterVerification($user->id);
 
                             return $this->postLogin($request);
@@ -577,11 +650,11 @@ class AuthController extends Controller
         }
 
         return \Redirect::route('otp-verification')
-                        ->withInput($request->input())
-                        ->with(['values' => $request->input(),
-                            'number'     => $user->mobile,
-                            'name'       => $user->user_name,
-                            'fails'      => $message, ]);
+            ->withInput($request->input())
+            ->with(['values' => $request->input(),
+                'number' => $user->mobile,
+                'name' => $user->user_name,
+                'fails' => $message,]);
     }
 
     public function resendOTP(OtpVerifyRequest $request)
@@ -605,11 +678,11 @@ class AuthController extends Controller
     }
 
     /**
-     * @category function to change ticket status when user verifies his account
-     *
      * @param int $id => user_id
      *
      * @return null
+     *
+     * @category function to change ticket status when user verifies his account
      *
      * @author manish.verma@ladybirdweb.com
      */
@@ -617,15 +690,15 @@ class AuthController extends Controller
     {
         // dd($id);
         $ticket = Tickets::select('id')
-                ->where(['user_id' => $id, 'status' => 6])
-                ->get();
+            ->where(['user_id' => $id, 'status' => 6])
+            ->get();
         Tickets::where(['user_id' => $id, 'status' => 6])
-                ->update(['status' => 1]);
+            ->update(['status' => 1]);
         if ($ticket != null) {
             foreach ($ticket as $value) {
                 $ticket_id = $value->id;
                 Ticket_Thread::where('ticket_id', '=', $ticket_id)
-                        ->update(['updated_at' => date('Y-m-d H:i:s')]);
+                    ->update(['updated_at' => date('Y-m-d H:i:s')]);
             }
         }
     }
@@ -633,7 +706,7 @@ class AuthController extends Controller
     public function changeRedirect()
     {
         $provider = \Session::get('provider');
-        $url = \Session::get($provider.'redirect');
+        $url = \Session::get($provider . 'redirect');
         \Config::set("services.$provider.redirect", $url);
     }
 
@@ -641,7 +714,7 @@ class AuthController extends Controller
     {
         $url = url($redirect);
         \Session::set('provider', $provider);
-        \Session::set($provider.'redirect', $url);
+        \Session::set($provider . 'redirect', $url);
         $this->changeRedirect();
     }
 

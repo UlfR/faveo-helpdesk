@@ -9,7 +9,6 @@
         "illuminate/html": "5.*",
         "vsmoraes/laravel-pdf": "1.0.1",
         "propaganistas/laravel-phone": "~2.0",
-        "bugsnag/bugsnag-laravel": "1.*",
 		"filp/whoops": "~1.0",
 		"thomaswelton/laravel-gravatar": "~1.0",
 		"php-imap/php-imap": "~2.0",

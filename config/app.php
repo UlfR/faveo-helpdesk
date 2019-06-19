@@ -113,15 +113,6 @@ return [
      */
     'log' => 'daily',
     /*
-      |---------------------------------------------------------------------------------
-      | Bugsnag error reporting
-      |-----------------------------------------------------------------------------------
-      |Accepts true or false as a value. It decides whether to send the error
-      |to FAVEO team when any exception/error occurs or not. True value of this variable will
-      |allow application to send error reports to FAVEO team's bugsnag log.
-     */
-    'bugsnag_reporting' => env('APP_BUGSNAG', true),
-    /*
       |--------------------------------------------------------------------------
       | Autoloaded Service Providers
       |--------------------------------------------------------------------------
@@ -169,7 +160,6 @@ return [
         'App\Providers\ConfigServiceProvider',
         'App\Providers\ComposerServiceProvider',
         'Propaganistas\LaravelPhone\LaravelPhoneServiceProvider',
-        'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
         'Vsmoraes\Pdf\PdfServiceProvider',
         'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
         'Chumper\Datatable\DatatableServiceProvider',
@@ -189,6 +179,8 @@ return [
         Yajra\Datatables\DatatablesServiceProvider::class,
         \App\Api\ApiServiceProvider::class,
         Telegram\Bot\Laravel\TelegramServiceProvider::class,
+        \Adldap\Laravel\AdldapServiceProvider::class,
+        \Adldap\Laravel\AdldapAuthServiceProvider::class,
     ],
     /*
       |--------------------------------------------------------------------------
@@ -235,7 +227,6 @@ return [
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
         'phone'        => 'The :attribute field contains an invalid number.',
-        'Bugsnag'      => 'Bugsnag\BugsnagLaravel\BugsnagFacade',
         'PDF'          => 'Vsmoraes\Pdf\PdfFacade',
         'Gravatar'     => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
         'UTC'          => 'App\Http\Controllers\Agent\helpdesk\TicketController',
@@ -258,5 +249,6 @@ return [
         'Datatables'   => Yajra\Datatables\Facades\Datatables::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
         'Telegram'     => Telegram\Bot\Laravel\Facades\Telegram::class,
+        'Adldap'    => \Adldap\Laravel\Facades\Adldap::class,
     ],
 ];

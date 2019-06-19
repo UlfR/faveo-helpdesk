@@ -3,12 +3,10 @@
 namespace App\Exceptions;
 
 // controller
-use Bugsnag;
-use Bugsnag\BugsnagLaravel\BugsnagExceptionHandler as ExceptionHandler;
 use Config;
 use Exception;
 // use Symfony\Component\HttpKernel\Exception\HttpException;
-// use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Validation\ValidationException as foundation;
@@ -39,7 +37,7 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+     * This is a great spot to send exceptions to Sentry, etc.
      *
      * @param \Exception $e
      *
@@ -47,19 +45,8 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
-        Bugsnag::setBeforeNotifyFunction(function ($error) { //set bugsnag
-            return false;
-        });
         // check if system is running in production environment
         if (\App::environment() == 'production') {
-            $debug = Config::get('app.bugsnag_reporting'); //get bugsang reporting preference
-            if ($debug) { //if preference is true for reporting
-                $version = Config::get('app.version'); //set app version in report
-                Bugsnag::setAppVersion($version);
-                Bugsnag::setBeforeNotifyFunction(function ($error) { //set bugsnag
-                    return true;
-                }); //set bugsnag reporting as true
-            }
         }
 
         return parent::report($e);

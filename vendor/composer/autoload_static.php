@@ -21,6 +21,8 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
+        'fe62ba7e10580d903cc46d808b5961a4' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/helpers.php',
+        'caf31cc6ec7cf2241cb6f12c226c3846' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/alias.php',
         'f18cc91337d49233e5754e93f3ed9ec3' => __DIR__ . '/..' . '/laravelcollective/html/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
@@ -79,6 +81,7 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
             'Tymon\\JWTAuth\\' => 14,
             'Torann\\GeoIP\\' => 13,
             'TijsVerkoyen\\CssToInlineStyles\\' => 31,
+            'Tightenco\\Collect\\' => 18,
             'Thomaswelton\\Tests\\LaravelGravatar\\' => 35,
             'Thomaswelton\\LaravelGravatar\\' => 29,
             'Tests\\' => 6,
@@ -204,6 +207,8 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
         array (
             'Aws\\' => 4,
             'App\\' => 4,
+            'Adldap\\Laravel\\' => 15,
+            'Adldap\\' => 7,
         ),
     );
 
@@ -293,6 +298,10 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
         'TijsVerkoyen\\CssToInlineStyles\\' => 
         array (
             0 => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src',
+        ),
+        'Tightenco\\Collect\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/tightenco/collect/src/Collect',
         ),
         'Thomaswelton\\Tests\\LaravelGravatar\\' => 
         array (
@@ -614,6 +623,14 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
+        'Adldap\\Laravel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adldap2/adldap2-laravel/src',
+        ),
+        'Adldap\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adldap2/adldap2/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
@@ -700,17 +717,6 @@ class ComposerStaticInit598add4b9b35c76d3599603201ccdd6d
             'Chumper\\Datatable' => 
             array (
                 0 => __DIR__ . '/..' . '/chumper/datatable/src',
-            ),
-        ),
-        'B' => 
-        array (
-            'Bugsnag_' => 
-            array (
-                0 => __DIR__ . '/..' . '/bugsnag/bugsnag/src',
-            ),
-            'Bugsnag\\BugsnagLaravel\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/bugsnag/bugsnag-laravel/src',
             ),
         ),
     );

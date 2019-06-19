@@ -858,7 +858,6 @@ return array(
     'not-authorised-error-debug'         => 'Вы не авторизованы для доступа к URL',
     'error-debug-settings'               => 'Настройки ошибок и отладки',
     'debugging'                          => 'Режим отладки',
-    'bugsnag-debugging'                  => 'Отправляйте отчеты о сбоях приложений, чтобы помочь Ladybird улучшить Faveo',
     'error-debug-settings-saved-message' => 'Ваша ошибка и настройки отладки были успешно сохранены',
     'error-debug-settings-error-message' => 'Вы не внесли никаких изменений в настройки.',
     'error-logs'                         => 'Журналы ошибок',

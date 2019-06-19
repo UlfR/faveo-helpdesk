@@ -426,7 +426,6 @@ class InstallController extends Controller
     public function env($default, $host, $port, $database, $dbusername, $dbpassword)
     {
         $ENV['APP_DEBUG'] = 'false';
-        $ENV['APP_BUGSNAG'] = 'true';
         $ENV['APP_URL'] = url('/');
         $ENV['DB_TYPE'] = $default;
         $ENV['DB_HOST'] = '"'.$host.'"';
