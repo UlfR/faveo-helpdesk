@@ -33,6 +33,10 @@ CREATE TABLE `kb_entity_visibility_defaults` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `users` ADD `telegram` VARCHAR(20) NULL DEFAULT NULL AFTER `user_language`;
+ALTER TABLE `department` ADD `ad_group` VARCHAR(64) NOT NULL AFTER `parent`;
+ALTER TABLE `organization` ADD `ad_group` VARCHAR(64) NOT NULL AFTER `updated_at`;
+ALTER TABLE `teams` ADD `ad_group` VARCHAR(64) NOT NULL AFTER `updated_at`;
+
 
 check ticket create/response from email
 full translate
@@ -40,3 +44,5 @@ sms for agents on tickets
 simplify user select on agent ticket create
 articles visibility by org/dep/team
 remove deps, orgs and teams with user remove, agent remove
+
+

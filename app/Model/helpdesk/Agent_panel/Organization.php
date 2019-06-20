@@ -11,7 +11,7 @@ class Organization extends BaseModel
     protected $table = 'organization';
 
     /* Define the fillable fields */
-    protected $fillable = ['id', 'name', 'phone', 'website', 'address', 'head', 'internal_notes'];
+    protected $fillable = ['id', 'name', 'phone', 'website', 'address', 'head', 'internal_notes', 'ad_group'];
 
     public function userRelation()
     {

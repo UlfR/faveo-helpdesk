@@ -53,14 +53,18 @@ class="active"
         @endif
         <div class="row">
             <!-- name -->
-            <div class="col-xs-6 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                 {!! Form::label('name',Lang::get('lang.name')) !!} <span class="text-red"> *</span>
                 {!! Form::text('name',null,['class' => 'form-control']) !!}
             </div>
             <!-- team lead -->
-            <div class="col-xs-6 form-group {{ $errors->has('team_lead') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('team_lead') ? 'has-error' : '' }}">
                 {!! Form::label('team_lead',Lang::get('lang.team_lead')) !!}
                 {!! Form::select('team_lead',[''=>Lang::get('lang.select_a_team_lead'), Lang::get('lang.members')=>$user->pluck('full_name','id')->toArray()],null,['class' => 'form-control']) !!}	
+            </div>
+            <div class="col-xs-4 form-group {{ $errors->has('ad_group') ? 'has-error' : '' }}">
+                {!! Form::label('ad_group', Lang::get('lang.ad_group')) !!}
+                {!! Form::text('ad_group', null, ['class' => 'form-control']) !!}
             </div>
         </div>
         <!-- status -->

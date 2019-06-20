@@ -8,6 +8,6 @@ class Teams extends BaseModel
 {
     protected $table = 'teams';
     protected $fillable = [
-        'name', 'status', 'team_lead', 'assign_alert', 'admin_notes',
+        'name', 'status', 'team_lead', 'assign_alert', 'admin_notes', 'ad_group',
     ];
 }

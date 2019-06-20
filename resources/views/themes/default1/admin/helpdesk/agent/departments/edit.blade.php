@@ -65,12 +65,12 @@ class="active"
         @endif
         <div class="row">
             <!-- name -->
-            <div class="col-xs-6 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                 {!! Form::label('name',Lang::get('lang.name')) !!} <span class="text-red"> *</span>
                 {!! Form::text('name',null,['class' => 'form-control']) !!}
             </div>
             <!-- account status -->
-            <div class="col-xs-6 form-group {{ $errors->has('account_status') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('account_status') ? 'has-error' : '' }}">
                 {!! Form::label('type',Lang::get('lang.type')) !!}
                 <div class="row">
                     <div class="col-xs-2">
@@ -81,7 +81,7 @@ class="active"
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3 form-group {{ $errors->has('parent') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('parent') ? 'has-error' : '' }}">
                 {!! Form::label('parent',Lang::get('lang.parent')) !!}
 
                 {!!Form::select('parent',[''=>'Select a Department','Departments'=>$dep_list],null,['class' => 'form-control select']) !!}
@@ -89,14 +89,18 @@ class="active"
         </div>
         <div class="row">
             <!-- sla -->
-            <div class="col-xs-6 form-group {{ $errors->has('sla') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('sla') ? 'has-error' : '' }}">
                 {!! Form::label('sla',Lang::get('lang.SLA_plan')) !!}
                 {!!Form::select('sla', [''=>Lang::get('lang.select_a_sla'), Lang::get('lang.sla_plans')=>$slas->pluck('grace_period','id')->toArray()],null,['class' => 'form-control select']) !!}
             </div>
             <!-- manager -->
-            <div class="col-xs-6 form-group {{ $errors->has('manager') ? 'has-error' : '' }}">
+            <div class="col-xs-4 form-group {{ $errors->has('manager') ? 'has-error' : '' }}">
                 {!! Form::label('manager',Lang::get('lang.manager')) !!}
                 {!!Form::select('manager',[null=>Lang::get('lang.select_a_manager'),Lang::get('lang.manager')=>$user->pluck('full_name','id')->toArray()],null,['class' => 'form-control select']) !!}
+            </div>
+            <div class="col-xs-4 form-group {{ $errors->has('ad_group') ? 'has-error' : '' }}">
+                {!! Form::label('ad_group', Lang::get('lang.ad_group')) !!}
+                {!! Form::text('ad_group', null, ['class' => 'form-control']) !!}
             </div>
         </div>
     </div>

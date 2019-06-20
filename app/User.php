@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Model\helpdesk\Agent\Assign_team_agent;
+use App\Model\helpdesk\Agent\Teams;
+use App\Model\helpdesk\Agent_panel\Organization;
 use App\Model\helpdesk\Agent_panel\User_dep;
 use App\Model\helpdesk\Agent_panel\User_org;
 use Illuminate\Auth\Authenticatable;
@@ -15,6 +17,17 @@ use Tymon\JWTAuth\Contracts\JWTSubject as AuthenticatableUserContract;
 /**
  * @property mixed id
  * @property mixed role
+ * @property int is_delete
+ * @property int active
+ * @property int gender
+ * @property array|string|null user_name
+ * @property string first_name
+ * @property null email
+ * @property string remember_token
+ * @property string profile_pic
+ * @property string password
+ * @property mixed last_name
+ * @property int assign_group
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthenticatableUserContract
 {
@@ -133,9 +146,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             $id = $this->attributes['id'];
         }
         $info = new UserAdditionalInfo();
-        $infos = $info->where('owner', $id)->pluck('value', 'key')->toArray();
-
-        return $infos;
+        return $info->where('owner', $id)->pluck('value', 'key')->toArray();
     }
 
     public function checkArray($key, $array)
@@ -225,5 +236,65 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function teamIDs() {
         return $this->teams()->pluck('team_id')->toArray();
+    }
+
+    public function updateFromLDAP($l) {
+        $uname = strtolower(explode('@', $l['userprincipalname'][0])[0]);
+        $fname = $l['givenname'][0];
+        $lname = $l['sn'][0];
+        $email = $l['mail'][0];
+        $group = array_map(function($w){return explode('=', explode(',', $w)[0])[1];}, $l['memberof']);
+
+        $urole = 'user';
+        $ufgrp = 2;
+        if (in_array('role_support', $group)) {
+            $urole = 'agent';
+            $ufgrp = 3;
+        }
+        if (in_array('role_admin', $group) ) {
+            $urole = 'admin';
+            $ufgrp = 1;
+        }
+
+        $this->user_name    = $uname;
+        $this->first_name   = $fname;
+        $this->last_name    = $lname;
+        $this->email        = $email;
+        $this->role         = $urole;
+        $this->assign_group = $ufgrp;
+
+        $this->save();
+
+        $i_dep = \App\Model\helpdesk\Agent\Department::query()->whereIn('ad_group', $group)->pluck('id')->toArray();
+        $i_org = Organization::query()->whereIn('ad_group', $group)->pluck('id')->toArray();
+        $i_tem = Teams::query()->whereIn('ad_group', $group)->pluck('id')->toArray();
+
+        $this->storeDepRelation($i_dep);
+        $this->storeOrgRelation($i_org);
+        $this->storeTeamRelation($i_tem);
+    }
+
+    public function storeDepRelation($ids)
+    {
+        User_dep::query()->where('user_id', $this->id)->delete();
+        foreach ($ids as $oid) {
+            User_dep::query()->create(['user_id' => $this->id, 'dep_id'  => $oid]);
+        }
+    }
+
+    public function storeOrgRelation($ids)
+    {
+        User_org::query()->where('user_id', $this->id)->delete();
+        foreach ($ids as $oid) {
+            User_org::query()->create(['user_id' => $this->id, 'org_id'  => $oid]);
+        }
+    }
+
+    public function storeTeamRelation($ids)
+    {
+        Assign_team_agent::query()->where('agent_id', $this->id)->delete();
+        foreach ($ids as $oid) {
+            Assign_team_agent::query()->create(['agent_id' => $this->id, 'team_id'  => $oid]);
+        }
     }
 }

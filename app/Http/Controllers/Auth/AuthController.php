@@ -25,8 +25,7 @@ use Hash;
 use Illuminate\Http\Request;
 use Lang;
 use Socialite;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Adldap;
+//use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 /**
  * ---------------------------------------------------
@@ -40,7 +39,7 @@ use Adldap;
  */
 class AuthController extends Controller
 {
-    use AuthenticatesAndRegistersUsers;
+//    use AuthenticatesAndRegistersUsers;
     /* to redirect after login */
 
     // if auth is agent
@@ -319,30 +318,28 @@ class AuthController extends Controller
                 return redirect()->back()->withErrors('email', 'Incorrect details')->with(['error' => $security->lockout_message, 'referer' => $referer]);
             }
 
+
             if (env('LDAP_ENABLED', '0') == '1' && $request->input('email') != 'admin') {
                 $field = 'user_name';
-                print_r(Adldap::getProviders());
-                die();
-                if (Adldap::auth()->attempt($usernameinput, $password, $bindAsUser = true)) {
-                    // the user exists in the LDAP server, with the provided password
-                    $user = \App\User::where('user_name', $usernameinput)->first();
+                $ad_username = $usernameinput . '@' . env('LDAP_DOMAIN');
+                if (\Adldap::auth()->attempt($ad_username, $password, $bindAsUser = true)) {
+                    $user = \App\User::query()->where('user_name', $usernameinput)->first();
                     $password = 'password';
                     if (!$user) {
-                        // the user doesn't exist in the local database, so we have to create one
                         $user = new \App\User();
-                        $user->user_name = $usernameinput;
-                        $user->password = Hash::make($password);
-                        $user->first_name = ucfirst($usernameinput);
-                        $user->email = null;
-                        $user->role = 'user';
-                        $code = str_random(60);
-                        $user->remember_token = $code;
                         $user->active = 1;
                         $user->is_delete = 0;
                         $user->gender = 1;
                         $user->profile_pic = '4925.cliente.png';
+                        $user->remember_token = str_random(60);
+                        $user->password = Hash::make('password');
                         $user->save();
                     }
+
+                    $ldapUser = \Adldap::getProvider('default')->search()->find($usernameinput);
+                    $user->updateFromLDAP($ldapUser);
+                    $user->password = Hash::make($password);
+                    $user->save();
 
                     // try login
                     $loginAttempts = 1;

@@ -53,19 +53,23 @@ class="active"
         @endif
         <!-- name : text : Required -->
         <div class="row">
-            <div class="col-xs-4 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <div class="col-xs-3 form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                 {!! Form::label('name',Lang::get('lang.name')) !!} <span class="text-red"> *</span>
                 {!! Form::text('name',null,['class' => 'form-control']) !!}
             </div>
             <!-- phone : Text : -->
-            <div class="col-xs-4 form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
+            <div class="col-xs-3 form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
                 {!! Form::label('phone',Lang::get('lang.phone')) !!}
                 {!! Form::text('phone',null,['class' => 'form-control']) !!}
             </div>
             <!--website : Text :  -->
-            <div class="col-xs-4 form-group {{ $errors->has('website') ? 'has-error' : '' }}">
+            <div class="col-xs-3 form-group {{ $errors->has('website') ? 'has-error' : '' }}">
                 {!! Form::label('website',Lang::get('lang.website')) !!}
                 {!! Form::text('website',null,['class' => 'form-control']) !!}
+            </div>
+            <div class="col-xs-3 form-group {{ $errors->has('ad_group') ? 'has-error' : '' }}">
+                {!! Form::label('ad_group', Lang::get('lang.ad_group')) !!}
+                {!! Form::text('ad_group', null, ['class' => 'form-control']) !!}
             </div>
         </div>
         <!-- Internal Notes : Textarea -->
